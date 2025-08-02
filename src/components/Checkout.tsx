@@ -3,15 +3,34 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Clock, Gift, Shield, Star } from "lucide-react";
+import { CheckCircle, Clock, Gift, Shield, Star, Flame } from "lucide-react";
 
 interface CheckoutProps {
   onPurchase: (plan: string) => void;
 }
 
+interface Notification {
+  id: number;
+  name: string;
+  plan: string;
+  timestamp: number;
+}
+
 export const Checkout = ({ onPurchase }: CheckoutProps) => {
   const navigate = useNavigate();
   const [timeLeft, setTimeLeft] = useState(4 * 60 + 30); // 4:30 minutes in seconds
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  
+  const maleNames = [
+    "Carlos", "Rafael", "Bruno", "Diego", "Lucas", "Felipe", "André", "Thiago",
+    "Rodrigo", "Marcelo", "Gabriel", "Leonardo", "Gustavo", "Fernando", "Ricardo",
+    "Eduardo", "Vinicius", "Matheus", "João", "Pedro", "Daniel", "Renato", "Fabio",
+    "Alexandre", "Leandro", "Henrique", "Caio", "Igor", "Julio", "Sergio"
+  ];
+  
+  const planNames = [
+    "Espiadinha Proibida", "Conversa Quente + Galeria", "Acesso VIP + Conteúdo Secreto"
+  ];
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -26,6 +45,52 @@ export const Checkout = ({ onPurchase }: CheckoutProps) => {
 
     return () => clearInterval(timer);
   }, []);
+
+  // Notification system
+  useEffect(() => {
+    const generateNotification = () => {
+      const randomName = maleNames[Math.floor(Math.random() * maleNames.length)];
+      const randomPlan = planNames[Math.floor(Math.random() * planNames.length)];
+      
+      const newNotification: Notification = {
+        id: Date.now(),
+        name: randomName,
+        plan: randomPlan,
+        timestamp: Date.now()
+      };
+      
+      // Play notification sound
+      try {
+        const audio = new Audio('/like.mp3');
+        audio.volume = 0.3;
+        audio.play().catch(() => {});
+      } catch (error) {
+        console.log('Audio not available');
+      }
+      
+      setNotifications(prev => {
+        const updated = [newNotification, ...prev];
+        // Keep only last 3 notifications
+        return updated.slice(0, 3);
+      });
+      
+      // Remove notification after 6 seconds
+      setTimeout(() => {
+        setNotifications(prev => prev.filter(n => n.id !== newNotification.id));
+      }, 6000);
+    };
+    
+    // Generate first notification after 2 seconds
+    const initialTimeout = setTimeout(generateNotification, 2000);
+    
+    // Then generate every 4 seconds
+    const notificationInterval = setInterval(generateNotification, 4000);
+    
+    return () => {
+      clearTimeout(initialTimeout);
+      clearInterval(notificationInterval);
+    };
+  }, [maleNames, planNames]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -191,6 +256,25 @@ export const Checkout = ({ onPurchase }: CheckoutProps) => {
           </div>
           <p className="text-red-400 font-bold mt-2 text-base">Ela já tá pronta... só falta você.</p>
         </div>
+      </div>
+      
+      {/* Notifications */}
+      <div className="fixed bottom-4 left-4 z-50 space-y-2">
+        {notifications.map((notification) => (
+          <div
+            key={notification.id}
+            className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-3 rounded-lg shadow-lg border border-orange-400 animate-in slide-in-from-left-5 duration-500 max-w-xs"
+          >
+            <div className="flex items-center gap-2">
+              <Flame className="w-4 h-4 text-yellow-300 flex-shrink-0" />
+              <div className="text-sm">
+                <span className="font-semibold">{notification.name}</span>
+                <span className="text-orange-100"> acabou de comprar </span>
+                <span className="font-medium">{notification.plan}</span>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
