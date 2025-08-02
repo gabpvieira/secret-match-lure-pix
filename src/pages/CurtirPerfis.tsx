@@ -115,6 +115,11 @@ export const CurtirPerfis = () => {
     setButtonPressed('like');
     playSound('/like.mp3');
     
+    // Salvar perfil curtido no localStorage
+    const likedProfiles = JSON.parse(localStorage.getItem('likedProfiles') || '[]');
+    likedProfiles.push(currentProfile);
+    localStorage.setItem('likedProfiles', JSON.stringify(likedProfiles));
+    
     // Simular match (30% de chance)
     const isMatch = Math.random() > 0.7;
     

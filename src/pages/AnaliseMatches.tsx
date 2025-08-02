@@ -87,10 +87,10 @@ const AnaliseMatches: React.FC = () => {
       setIsAnalyzing(false);
       setShowPreview(true);
       
-      // Redirecionar para checkout após 5 segundos do preview
+      // Redirecionar para checkout após 8 segundos do preview
       setTimeout(() => {
         navigate('/checkout');
-      }, 5000);
+      }, 8000);
     }, 15000); // 15 segundos de análise
 
     // Atualizar progresso
@@ -206,68 +206,82 @@ const AnaliseMatches: React.FC = () => {
       <div className="max-w-4xl mx-auto">
         {/* Preview Section */}
         {showPreview && (
-          <div className="text-center animate-fade-in">
-            <h1 className="text-3xl font-bold text-white mb-2">
-              🔥 Matches Encontrados!
-            </h1>
-            <p className="text-gray-300 mb-8">
-              Encontramos 3 matches com alta compatibilidade para você
-            </p>
-            
-            {/* Preview Matches - Blurred */}
-            <div className="grid md:grid-cols-3 gap-6 mb-8">
-              {mockMatches.slice(0, 3).map((match, index) => (
-                <div 
-                  key={match.id}
-                  className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700/50 relative overflow-hidden"
-                  style={{ animationDelay: `${index * 0.3}s` }}
-                >
-                  {/* Blur Overlay */}
-                  <div className="absolute inset-0 bg-black/30 backdrop-blur-md rounded-2xl z-10 flex items-center justify-center">
-                    <div className="text-center">
-                      <div className="text-4xl mb-2">🔒</div>
-                      <p className="text-white font-bold text-sm">PREMIUM</p>
-                    </div>
-                  </div>
+          <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-pink-900 flex items-center justify-center p-4">
+            <div className="max-w-4xl mx-auto text-center">
+              <div className="mb-8">
+                <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 font-['Poppins']">
+                  🔥 Matches Encontrados!
+                </h1>
+                <p className="text-xl text-gray-300 font-['Poppins']">
+                  Encontramos 3 matches com alta compatibilidade para você
+                </p>
+              </div>
+
+              {/* Preview Cards */}
+              <div className="grid md:grid-cols-3 gap-6 mb-8">
+                {(() => {
+                  const likedProfiles = JSON.parse(localStorage.getItem('likedProfiles') || '[]');
+                  const selectedProfiles = likedProfiles.slice(0, 3);
                   
-                  <div className="text-center relative">
-                    <div className="relative mb-4">
-                      <img 
-                        src={match.photo}
-                        alt={match.name}
-                        className="w-24 h-24 rounded-full mx-auto object-cover border-4 border-gradient-to-r from-red-500 to-purple-500"
-                      />
-                      <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full font-bold">
-                        {match.compatibility}%
+                  // Se não houver perfis curtidos suficientes, usar perfis padrão
+                  const defaultProfiles = [
+                    { name: "Ana", age: 24, image: "https://i.postimg.cc/9fdvnCPh/01.png" },
+                    { name: "Jéssica", age: 28, image: "https://i.postimg.cc/k4wL7shY/02.png" },
+                    { name: "Nanda", age: 22, image: "https://i.postimg.cc/cHdVq2T8/03.png" }
+                  ];
+                  
+                  const profilesToShow = selectedProfiles.length >= 3 ? selectedProfiles : defaultProfiles;
+                  
+                  return profilesToShow.slice(0, 3).map((profile, index) => (
+                    <div key={index} className="relative bg-white/10 backdrop-blur-lg rounded-2xl overflow-hidden border border-white/20">
+                      {/* Blurred Image */}
+                      <div className="aspect-[3/4] bg-gradient-to-br from-pink-500/20 to-purple-500/20 relative">
+                        <img 
+                          src={profile.image} 
+                          alt={profile.name}
+                          className="w-full h-full object-cover filter blur-md"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = '/placeholder.svg';
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center">
+                          <div className="text-center text-white">
+                            <div className="w-16 h-16 bg-yellow-500 rounded-full flex items-center justify-center mx-auto mb-3">
+                              <span className="text-2xl">🔒</span>
+                            </div>
+                            <p className="font-bold text-lg font-['Poppins']">PREMIUM</p>
+                            <p className="text-sm opacity-80">{profile.age} anos</p>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Match Info */}
+                      <div className="p-4">
+                        <div className="flex items-center justify-center gap-2 text-green-400 mb-2">
+                          <span className="text-sm font-bold">99%</span>
+                        </div>
+                        <div className="flex items-center justify-center gap-1 text-red-400">
+                          <span className="text-sm">❤️ {95 - index * 3}% de compatibilidade</span>
+                        </div>
                       </div>
                     </div>
-                    
-                    <h3 className="text-xl font-bold text-white mb-1">
-                      {match.name}
-                    </h3>
-                    <p className="text-gray-400 mb-3">
-                      {match.age} anos
-                    </p>
-                    
-                    <div className="bg-gradient-to-r from-red-500/20 to-purple-500/20 rounded-lg p-3">
-                      <p className="text-sm text-gray-300">
-                        💕 {match.compatibility}% de compatibilidade
-                      </p>
-                    </div>
-                  </div>
+                  ));
+                })()}
+              </div>
+
+              {/* Call to Action */}
+              <div className="bg-gradient-to-r from-yellow-600 to-orange-600 rounded-2xl p-6 border border-yellow-500/30">
+                <div className="flex items-center justify-center gap-3 mb-4">
+                  <span className="text-3xl">🚀</span>
+                  <h2 className="text-2xl font-bold text-white font-['Poppins']">Desbloqueie Agora!</h2>
                 </div>
-              ))}
-            </div>
-            
-            <div className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-2xl p-6 border-2 border-yellow-500/50">
-              <h2 className="text-2xl font-bold text-white mb-2">
-                🚀 Desbloqueie Agora!
-              </h2>
-              <p className="text-gray-300 mb-4">
-                Upgrade para Premium e converse com seus matches
-              </p>
-              <div className="text-yellow-400 font-bold text-lg">
-                Redirecionando para ofertas especiais...
+                <p className="text-white/90 mb-4 font-['Poppins']">
+                  Upgrade para Premium e converse com seus matches
+                </p>
+                <p className="text-yellow-200 font-bold text-lg font-['Poppins']">
+                  Redirecionando para ofertas especiais...
+                </p>
               </div>
             </div>
           </div>
