@@ -11,39 +11,37 @@ const PlanoDetalhes: React.FC = () => {
   // Configuração dos planos
   const planConfig = {
     'espiadinha': {
-      name: 'Espiadinha Básica',
-      price: 'R$ 19,90',
-      description: 'Acesso básico aos matches',
+      name: 'Espiadinha Proibida',
+      price: 'R$ 9,90',
+      description: 'Sabe aquela prévia só pra quem ela quer testar? É isso aqui.',
       features: [
-        'Ver quem te curtiu',
-        'Fotos sem censura',
-        'Chat liberado por 24h'
+        'Veja o que ela separou pra te deixar curioso',
+        'Acesso rápido às primeiras fotos',
+        'Visualização sem cadastro extra ou demora'
       ],
       checkoutUrl: 'https://www.ggcheckout.com/checkout/v2/sCpufru9Swlb8JHOKYSh',
       color: 'from-blue-500 to-blue-600'
     },
     'conversaquente': {
       name: 'Conversa Quente + Galeria',
-      price: 'R$ 39,90',
-      description: 'Acesso completo + galeria',
+      price: 'R$ 29,90',
+      description: 'Ela só responde quem mostra que veio pro jogo. Você quer resposta? Então destrava.',
       features: [
-        'Tudo do plano anterior',
         'Galeria completa desbloqueada',
-        'Chat ilimitado',
-        'Fotos íntimas exclusivas'
+        'Chat sem limite de mensagens',
+        'Conteúdo íntimo reservado só pra quem investe de verdade'
       ],
       checkoutUrl: 'https://www.ggcheckout.com/checkout/v2/Rm6m8FX3P0gnfn02pEyM',
       color: 'from-red-500 to-red-600'
     },
     'vipzao': {
-      name: 'Acesso Total VIP',
-      price: 'R$ 59,90',
-      description: 'Experiência premium completa',
+      name: 'Acesso VIP + Conteúdo Secreto',
+      price: 'R$ 49,90',
+      description: 'Esse é pra quem quer tudo. Ela envia mais. Te mostra mais. E te guarda nos favoritos.',
       features: [
-        'Tudo dos planos anteriores',
-        'Vídeos íntimos exclusivos',
-        'Chamada de vídeo liberada',
-        'Conteúdo VIP atualizado diariamente'
+        'Acesso vitalício a tudo',
+        'Conteúdos secretos não liberados publicamente',
+        'Mensagens e surpresas exclusivas pra membros VIP'
       ],
       checkoutUrl: 'https://www.ggcheckout.com/checkout/v2/XW9SfWHflnGXJsi16gBq',
       color: 'from-purple-500 to-purple-600'
@@ -121,6 +119,9 @@ const PlanoDetalhes: React.FC = () => {
                 <Clock className="w-4 h-4" />
                 <span>Redirecionamento automático em 10 segundos...</span>
               </div>
+              <p className="text-gray-500 text-xs text-center mt-2">
+                Acesso sigiloso. Cobrança discreta. Visualização imediata.
+              </p>
             </div>
 
             <div className="space-y-3">
@@ -129,7 +130,7 @@ const PlanoDetalhes: React.FC = () => {
                 className="w-full professional-button text-lg py-4 font-bold"
                 size="lg"
               >
-                Prosseguir para Pagamento
+                DESBLOQUEAR AGORA 🔓
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
               
