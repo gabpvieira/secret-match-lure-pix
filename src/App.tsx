@@ -9,6 +9,7 @@ import { MatchSecreto } from "./pages/MatchSecreto";
 import CurtirPerfis from "./pages/CurtirPerfis";
 import AnaliseMatches from "./pages/AnaliseMatches";
 import { Checkout } from "./components/Checkout";
+import ScrollToTop from "./components/ScrollToTop";
 
 import PlanoDetalhes from "./pages/PlanoDetalhes";
 import NotFound from "./pages/NotFound";
@@ -21,6 +22,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/ambiente-seguro" element={<AmbienteSeguro />} />
