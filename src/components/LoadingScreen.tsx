@@ -42,29 +42,29 @@ export const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
   }, [onComplete]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
-      <Card className="w-full max-w-md modern-card">
-        <CardContent className="p-8 text-center">
-          <div className="mb-6">
-            <Loader2 className="w-12 h-12 mx-auto animate-spin text-primary" />
+    <div className="min-h-[100dvh] flex items-center justify-center p-4">
+      <Card className="w-full container-mobile modern-card">
+        <CardContent className="p-6 sm:p-8 text-center">
+          <div className="mb-4 sm:mb-6">
+            <Loader2 className="w-10 h-10 sm:w-12 sm:h-12 mx-auto animate-spin text-primary" />
           </div>
           
-          <h2 className="text-xl font-semibold mb-4 text-heading">
+          <h2 className="text-fluid-lg sm:text-fluid-xl font-semibold mb-3 sm:mb-4 text-heading">
             Analisando seu perfil...
           </h2>
           
-          <p className="text-muted-foreground mb-6 text-body transition-opacity duration-500 ease-in-out">
+          <p className="text-muted-foreground mb-4 sm:mb-6 text-body transition-opacity duration-500 ease-in-out text-fluid-sm sm:text-fluid-base leading-relaxed">
             {messages[currentMessage]}
           </p>
           
-          <div className="w-full bg-muted rounded-full h-2 mb-4">
+          <div className="w-full bg-muted rounded-full h-2 mb-3 sm:mb-4">
             <div 
               className="h-2 rounded-full bg-gradient-to-r from-primary via-accent to-secondary transition-all duration-300"
               style={{ width: `${progress}%` }}
             />
           </div>
           
-          <p className="text-sm text-muted-foreground text-caption">
+          <p className="text-fluid-xs sm:text-fluid-sm text-muted-foreground text-caption">
             {progress}% concluído
           </p>
         </CardContent>
