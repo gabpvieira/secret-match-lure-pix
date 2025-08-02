@@ -62,69 +62,60 @@ export const Checkout = ({ onPurchase }: CheckoutProps) => {
         {/* Header */}
         <div className="text-center mb-6 sm:mb-8">
           <h1 className="text-xl sm:text-2xl md:text-3xl font-bold gradient-text mb-3 sm:mb-4 leading-tight px-2 text-heading">
-            Ela já mandou a primeira… falta só você liberar.
+            Ela já se abriu... agora é tua vez de mostrar que veio.
           </h1>
+          <p className="text-lg sm:text-xl font-semibold text-red-400 mb-6 px-2">
+            A próxima foto some em minutos... se você não liberar agora.
+          </p>
           
-          <div className="bg-red-500/20 border border-red-500/30 rounded-lg p-3 sm:p-4 mb-6 sm:mb-8 mx-2">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-red-400" />
-              <span className="text-red-400 font-semibold text-sm sm:text-base">Oferta expira em:</span>
-            </div>
+          <div className="bg-[#FF0033] border border-red-600 rounded-lg p-4 sm:p-6 mb-6 sm:mb-8 mx-2 shadow-lg">
             <div className="text-center">
-              <span className="text-xl sm:text-2xl font-bold text-red-400">
-                {String(Math.floor(timeLeft / 60)).padStart(2, '0')}:
-                {String(timeLeft % 60).padStart(2, '0')}
-              </span>
+              <p className="text-white font-bold text-lg sm:text-xl mb-2">🔥 Você tem {formatTime(timeLeft)} pra provar que não é só mais um curioso.</p>
+              <div className="text-center">
+                <span className="text-3xl sm:text-4xl font-bold text-white">
+                  {String(Math.floor(timeLeft / 60)).padStart(2, '0')}:
+                  {String(timeLeft % 60).padStart(2, '0')}
+                </span>
+              </div>
             </div>
           </div>
-          
-          <p className="text-muted-foreground text-body">
-            Você tem 9 minutos antes que seu acesso expire.
-          </p>
         </div>
 
         {/* Bonus Section */}
-        <Card className="modern-card mb-8">
+        <Card className="modern-card mb-8 border-2 border-red-500/30 bg-gradient-to-br from-red-950/20 to-black/20">
           <CardHeader className="text-center">
             <div className="flex items-center justify-center gap-2 mb-2">
-              <Gift className="w-6 h-6 text-secondary" />
-              <CardTitle className="text-xl gradient-text text-subheading">
-                BÔNUS Método Rei do Match™
+              <span className="text-2xl">💣</span>
+              <CardTitle className="text-xl sm:text-2xl font-bold gradient-text text-subheading">
+                BÔNUS: Método Rei do Match™
               </CardTitle>
             </div>
+            <p className="text-lg font-semibold text-red-400 mt-2">
+              O pacote secreto que transforma conversa fiada em nude enviado.
+            </p>
           </CardHeader>
           <CardContent>
-            <div className="text-center mb-4">
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <Star className="w-5 h-5 text-yellow-400" />
-                <h3 className="text-lg font-semibold text-subheading">Quer sair do vácuo e entrar no jogo de verdade?</h3>
+            <div className="grid gap-3 text-sm sm:text-base">
+              <div className="flex items-start gap-3">
+                <span className="text-green-400 font-bold text-lg">✅</span>
+                <span className="font-medium">100 mensagens que acendem ela no papo e molham no privado</span>
               </div>
-              <p className="text-muted-foreground text-body">
-                Ganhe o pacote secreto pra virar mestre da conquista digital em 7 dias.
-              </p>
-            </div>
-            
-            <div className="grid md:grid-cols-2 gap-4 text-sm">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-green-400" />
-                100 mensagens que deixam ela curiosa e molhada de vontade
+              <div className="flex items-start gap-3">
+                <span className="text-green-400 font-bold text-lg">✅</span>
+                <span className="font-medium">Como prender atenção sem ter beleza, dinheiro ou perfil top</span>
               </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-green-400" />
-                Frases de abertura que geram resposta imediata
+              <div className="flex items-start gap-3">
+                <span className="text-green-400 font-bold text-lg">✅</span>
+                <span className="font-medium">Frases que forçam resposta em menos de 1 minuto</span>
               </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-green-400" />
-                Guia rápido de como chamar atenção sem ser bonito ou rico
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-green-400" />
-                Estratégias pra transformar o 1º encontro num final feliz
+              <div className="flex items-start gap-3">
+                <span className="text-green-400 font-bold text-lg">✅</span>
+                <span className="font-medium">Estratégia ninja pra sair do chat direto pro motel</span>
               </div>
             </div>
-            <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground mt-2 text-caption">
-              <Gift className="w-3 h-3" />
-              <span>Incluído automaticamente após qualquer plano</span>
+            <div className="flex items-center justify-center gap-2 text-sm text-yellow-400 mt-4 font-semibold bg-black/30 rounded-lg p-3">
+              <span className="text-lg">🔐</span>
+              <span>Liberado automaticamente após qualquer plano</span>
             </div>
           </CardContent>
         </Card>
