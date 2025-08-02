@@ -34,25 +34,28 @@ export const Checkout = ({ onPurchase }: CheckoutProps) => {
   const plans = [
     {
       id: "basic",
-      name: "Acesso rápido",
+      name: "ESPIADINHA PROIBIDA",
       price: "R$9,90",
-      description: "Veja agora o que ela já separou pra você",
-      features: ["Acesso imediato a fotos", "Visualização rápida", "Sem enrolação"]
+      description: "Só o básico... mas já é o suficiente pra subir o sangue.",
+      features: ["Veja o que ela separou só pra você", "Acesso direto às fotos liberadas", "Visualização rápida sem enrolação"],
+      buttonText: "QUERO DAR UMA ESPIADA 👀"
     },
     {
       id: "premium",
-      name: "Acesso completo + conversa",
+      name: "CONVERSA QUENTE + GALERIA LIBERADA",
       price: "R$29,90",
-      description: "Desbloqueie tudo e comece a conversar sem limites",
-      features: ["Fotos + Chat liberado", "Converse com quem quiser", "Prioridade no suporte"],
-      popular: true
+      description: "Ela quer falar com você. Mas só com quem desbloqueia tudo.",
+      features: ["Fotos privadas + chat sem limites", "Converse com quem quiser, na hora", "Receba atenção antes dos outros"],
+      popular: true,
+      buttonText: "BORA TROCAR IDEIA SUJA 🔥"
     },
     {
       id: "vip",
-      name: "VIP vitalício com conteúdos extras",
+      name: "ACESSO TOTAL + CONTEÚDO SAFADO VIP",
       price: "R$49,90",
-      description: "Acesso vitalício + conteúdos secretos e exclusivos",
-      features: ["Acesso vitalício", "Conteúdos extras", "Bônus exclusivos", "Suporte VIP"]
+      description: "Desbloqueia tudo. Ela vai te mandar o que ninguém mais vê.",
+      features: ["Acesso vitalício sem bloqueios", "Conteúdos secretos só pros VIPs", "Surpresas íntimas exclusivas"],
+      buttonText: "QUERO TUDO. TUDO MESMO 😈"
     }
   ];
 
@@ -148,10 +151,10 @@ export const Checkout = ({ onPurchase }: CheckoutProps) => {
                 
                 <Button 
                   onClick={() => onPurchase(plan.id)}
-                  className={`w-full text-sm sm:text-base min-h-[48px] touch-manipulation professional-button ${plan.popular ? 'bg-gradient-to-r from-primary via-accent to-secondary' : ''}`}
+                  className={`w-full text-sm sm:text-base min-h-[48px] touch-manipulation professional-button font-bold ${plan.popular ? 'bg-gradient-to-r from-primary via-accent to-secondary' : ''}`}
                   variant={plan.popular ? "default" : "outline"}
                 >
-                  Escolher Plano
+                  {plan.buttonText || "Escolher Plano"}
                 </Button>
               </CardContent>
             </Card>
@@ -161,8 +164,9 @@ export const Checkout = ({ onPurchase }: CheckoutProps) => {
         <div className="text-center mt-8 text-sm text-muted-foreground">
           <div className="flex items-center justify-center gap-2 text-caption">
             <Shield className="w-4 h-4 text-green-400" />
-            <p>Pagamento 100% seguro • Acesso imediato após confirmação</p>
+            <p className="font-semibold text-white">Pagamento discreto, acesso instantâneo, prazer garantido.</p>
           </div>
+          <p className="text-red-400 font-bold mt-2 text-base">Ela já tá pronta... só falta você.</p>
         </div>
       </div>
     </div>
