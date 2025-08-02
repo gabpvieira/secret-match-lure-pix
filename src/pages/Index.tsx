@@ -189,9 +189,9 @@ const Index = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <div className="relative overflow-hidden">
+      <div className="relative overflow-hidden pt-8 sm:pt-12 md:pt-16">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-accent/20 to-secondary/20" />
-        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12 md:py-16">
+        <div className="relative max-w-4xl mx-auto px-6 sm:px-8 md:px-10 py-12 sm:py-16 md:py-20">
           <div className="text-center">
             <Badge className="mb-4 sm:mb-6 text-xs sm:text-sm" variant="outline">
               <MapPin className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
@@ -218,14 +218,14 @@ const Index = () => {
               className="professional-button text-base sm:text-lg text-caption px-6 sm:px-8 py-4 sm:py-6 w-full sm:w-auto max-w-sm mx-auto touch-manipulation font-semibold"
             >
               <Eye className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-              Ver Quem Me Quer Agora
+              INICIAR AGORA
             </Button>
           </div>
         </div>
       </div>
 
       {/* Features Section */}
-      <div className="py-8 sm:py-12 md:py-16 px-4 sm:px-6">
+      <div className="py-12 sm:py-16 md:py-20 px-6 sm:px-8 md:px-10">
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
             <Card className="modern-card text-center">
@@ -266,6 +266,9 @@ const Index = () => {
           </div>
         </div>
       </div>
+      
+      {/* Bottom spacing */}
+      <div className="pb-8 sm:pb-12 md:pb-16"></div>
     </div>
   );
 };
