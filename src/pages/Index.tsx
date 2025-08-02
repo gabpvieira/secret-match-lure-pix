@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,7 +8,7 @@ import { LoadingScreen } from "@/components/LoadingScreen";
 import { MatchResult } from "@/components/MatchResult";
 import { Checkout } from "@/components/Checkout";
 import { PostPurchase } from "@/components/PostPurchase";
-import { useGeolocation } from "@/hooks/useGeolocation";
+import { useGeolocation, getFakeCityForProfile, getUserLocationData } from "@/hooks/useGeolocation";
 import { SwipeProfileCard } from "@/components/SwipeProfileCard";
 import ProfileOnboarding from "@/components/ProfileOnboarding";
 
@@ -20,9 +20,11 @@ const Index = () => {
   const [selectedPlan, setSelectedPlan] = useState<string>('');
   const [currentProfileIndex, setCurrentProfileIndex] = useState(0);
   const [userProfileData, setUserProfileData] = useState<any>(null);
+  const [profiles, setProfiles] = useState<any[]>([]);
+  const [loadingProfiles, setLoadingProfiles] = useState(true);
   const { city, loading: locationLoading } = useGeolocation();
 
-  const profiles = [
+  const baseProfiles = [
     {
       id: 1,
       name: "Thaís G.",
@@ -95,6 +97,32 @@ const Index = () => {
     }
   ];
 
+  const generateProfilesWithFakeCities = async (userState: string) => {
+    return baseProfiles.map(profile => ({
+      ...profile,
+      location: getFakeCityForProfile(userState)
+    }));
+  };
+
+  useEffect(() => {
+    const initializeProfiles = async () => {
+      try {
+        const locationData = await getUserLocationData();
+        const userState = locationData?.state || 'SP';
+        const profilesWithFakeCities = await generateProfilesWithFakeCities(userState);
+        setProfiles(profilesWithFakeCities);
+      } catch (error) {
+        console.error('Erro ao detectar localização:', error);
+        const fallbackProfiles = await generateProfilesWithFakeCities('SP');
+        setProfiles(fallbackProfiles);
+      } finally {
+        setLoadingProfiles(false);
+      }
+    };
+
+    initializeProfiles();
+  }, []);
+
   const handleLikeProfile = (profileId: number) => {
     const newLiked = new Set(likedProfiles);
     if (newLiked.has(profileId)) {
@@ -154,6 +182,17 @@ const Index = () => {
   }
 
   if (currentStep === 'profiles') {
+    if (loadingProfiles) {
+      return (
+        <div className="min-h-screen min-h-[100dvh] flex items-center justify-center bg-zinc-950">
+          <div className="text-white text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p>Carregando perfis...</p>
+          </div>
+        </div>
+      );
+    }
+
     const profile = profiles[currentProfileIndex];
     return (
       <div className="min-h-screen min-h-[100dvh] flex items-center justify-center bg-zinc-950 p-4">
@@ -163,8 +202,8 @@ const Index = () => {
           age={profile.age}
           image={profile.image}
           bio={profile.bio}
-          city={city}
-          loadingLocation={locationLoading}
+          city={profile.location}
+          loadingLocation={false}
           onLike={() => {
             setLikedProfiles(new Set([...likedProfiles, profile.id]));
             if (currentProfileIndex === profiles.length - 1) {

@@ -46,6 +46,13 @@ export const Checkout = ({ onPurchase }: CheckoutProps) => {
     return () => clearInterval(timer);
   }, []);
 
+  // Disparar evento do Facebook Pixel quando a página de planos for visualizada
+  useEffect(() => {
+    if (typeof window !== 'undefined' && (window as any).dispararVisualizouPlanos) {
+      (window as any).dispararVisualizouPlanos();
+    }
+  }, []);
+
   // Notification system
   useEffect(() => {
     const generateNotification = () => {
@@ -152,10 +159,10 @@ export const Checkout = ({ onPurchase }: CheckoutProps) => {
       <div className="container-mobile">
         {/* Header */}
         <div className="text-center mb-4 sm:mb-6 md:mb-8">
-          <h1 className="text-fluid-xl sm:text-fluid-2xl md:text-fluid-3xl font-bold gradient-text mb-3 sm:mb-4 leading-tight px-2 text-heading">
+          <h1 className="text-fluid-2xl sm:text-fluid-3xl md:text-fluid-4xl font-bold gradient-text mb-3 sm:mb-4 leading-tight px-2 text-heading">
             Ela já se abriu... agora é tua vez de mostrar que veio.
           </h1>
-          <p className="text-fluid-lg sm:text-fluid-xl font-semibold text-red-400 mb-4 sm:mb-6 px-2">
+          <p className="text-fluid-xl sm:text-fluid-2xl font-semibold text-red-400 mb-4 sm:mb-6 px-2">
             A próxima foto some em minutos... se você não liberar agora.
           </p>
           
@@ -212,41 +219,61 @@ export const Checkout = ({ onPurchase }: CheckoutProps) => {
         </Card>
 
         {/* Plans */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
-          {plans.map((plan) => (
-            <Card key={plan.id} className={`modern-card relative ${plan.popular ? 'ring-2 ring-primary' : ''}`}>
-              {plan.popular && (
-                <Badge className="absolute -top-2 sm:-top-3 left-1/2 transform -translate-x-1/2 bg-primary text-fluid-xs sm:text-fluid-sm px-2 py-1">
-                  Mais Popular
-                </Badge>
-              )}
-              
-              <CardHeader className="text-center p-3 sm:p-4 md:p-6">
-                <CardTitle className="text-fluid-sm sm:text-fluid-base md:text-fluid-lg text-subheading">{plan.name}</CardTitle>
-                <div className="text-fluid-xl sm:text-fluid-2xl md:text-fluid-3xl font-bold gradient-text">{plan.price}</div>
-                <p className="text-fluid-xs sm:text-fluid-sm text-muted-foreground text-body">{plan.description}</p>
-              </CardHeader>
-              
-              <CardContent className="p-3 sm:p-4 md:p-6">
-                <ul className="space-y-1 sm:space-y-2 mb-3 sm:mb-4 md:mb-6">
-                  {plan.features.map((feature, index) => (
-                    <li key={index} className="flex items-center gap-2 text-fluid-xs sm:text-fluid-sm text-body">
-                      <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-green-400 flex-shrink-0" />
-                      <span className="text-left">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
+        <div className="flex flex-col sm:flex-row justify-center items-stretch gap-4 sm:gap-6 max-w-4xl mx-auto">
+          {plans.map((plan) => {
+            // Definir estilos específicos para cada plano
+            let cardStyles = '';
+            let badgeStyles = '';
+            let buttonStyles = '';
+            
+            if (plan.id === 'espiadinha') {
+              cardStyles = 'border-2 border-gray-500/50 bg-gradient-to-br from-gray-800/30 to-gray-900/30';
+              badgeStyles = 'bg-gray-600';
+              buttonStyles = 'bg-gray-600 hover:bg-gray-500 border-gray-500';
+            } else if (plan.id === 'conversaquente') {
+              cardStyles = 'border-2 border-red-500 bg-gradient-to-br from-red-950/40 to-red-900/40 shadow-lg shadow-red-500/25 ring-2 ring-red-500/50';
+              badgeStyles = 'bg-red-600 shadow-lg shadow-red-500/50';
+              buttonStyles = 'bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 shadow-lg shadow-red-500/30';
+            } else if (plan.id === 'vipzao') {
+              cardStyles = 'border-2 border-yellow-500 bg-gradient-to-br from-yellow-900/40 to-amber-900/40 shadow-lg shadow-yellow-500/25 ring-2 ring-yellow-500/50';
+              badgeStyles = 'bg-yellow-600 shadow-lg shadow-yellow-500/50';
+              buttonStyles = 'bg-gradient-to-r from-yellow-600 to-amber-500 hover:from-yellow-500 hover:to-amber-400 shadow-lg shadow-yellow-500/30 text-black font-bold';
+            }
+            
+            return (
+              <Card key={plan.id} className={`modern-card relative w-full sm:w-72 ${cardStyles}`}>
+                {plan.popular && (
+                   <Badge className={`absolute -top-4 sm:-top-5 left-1/2 transform -translate-x-1/2 text-fluid-xs sm:text-fluid-sm px-3 py-1 ${badgeStyles}`}>
+                     Mais Vendido
+                   </Badge>
+                 )}
                 
-                <Button 
-                  onClick={() => handlePurchase(plan.id)}
-                  className={`w-full text-fluid-sm sm:text-fluid-base min-h-[44px] sm:min-h-[48px] touch-manipulation professional-button font-bold ${plan.popular ? 'bg-gradient-to-r from-primary via-accent to-secondary' : ''}`}
-                  variant={plan.popular ? "default" : "outline"}
-                >
-                  {plan.buttonText || "Escolher Plano"}
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+                <CardHeader className="text-center p-4 sm:p-5">
+                  <CardTitle className="text-fluid-base sm:text-fluid-lg md:text-fluid-xl text-subheading font-bold">{plan.name}</CardTitle>
+                  <div className="text-fluid-2xl sm:text-fluid-3xl md:text-fluid-4xl font-bold gradient-text">{plan.price}</div>
+                  <p className="text-fluid-sm sm:text-fluid-base text-muted-foreground text-body">{plan.description}</p>
+                </CardHeader>
+                
+                <CardContent className="p-4 sm:p-5">
+                  <ul className="space-y-2 sm:space-y-3 mb-4 sm:mb-6">
+                    {plan.features.map((feature, index) => (
+                      <li key={index} className="flex items-center gap-2 text-fluid-sm sm:text-fluid-base text-body">
+                        <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-400 flex-shrink-0" />
+                        <span className="text-left">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  
+                  <Button 
+                    onClick={() => handlePurchase(plan.id)}
+                    className={`w-full text-fluid-base sm:text-fluid-lg min-h-[48px] sm:min-h-[52px] touch-manipulation font-bold ${buttonStyles}`}
+                  >
+                    {plan.buttonText || "Escolher Plano"}
+                  </Button>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
         
         <div className="text-center mt-6 sm:mt-8 text-fluid-sm text-muted-foreground">

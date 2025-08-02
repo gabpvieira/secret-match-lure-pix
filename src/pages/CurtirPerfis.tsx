@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Heart, X, MapPin, Star, Sparkles, Users } from 'lucide-react';
+import { getFakeCityForProfile, getUserLocationData } from '@/hooks/useGeolocation';
 
 interface Profile {
   id: number;
@@ -13,88 +14,87 @@ interface Profile {
   location: string;
 }
 
-const mockProfiles: Profile[] = [
+// Perfis base sem localização fixa
+const baseProfiles = [
   {
     id: 1,
     name: "Thaís G.",
     age: 24,
     bio: "meu hobby é dançar na frente do espelho 🤫 quem sabe eu te mostro...",
-    image: "https://i.postimg.cc/9fdvnCPh/01.png",
-    location: "Online em São Paulo"
+    image: "https://i.postimg.cc/9fdvnCPh/01.png"
   },
   {
     id: 2,
     name: "Jéssica R.",
     age: 28,
     bio: "Libriana safadinha 👀🍷 só dou moral se tiver papo bom e pegada melhor ainda",
-    image: "https://i.postimg.cc/k4wL7shY/02.png",
-    location: "Online em Rio de Janeiro"
+    image: "https://i.postimg.cc/k4wL7shY/02.png"
   },
   {
     id: 3,
     name: "Nanda M.",
     age: 22,
     bio: "Não sou fácil, mas sei ser impossível de esquecer 😘 Vem c respeito 😏",
-    image: "https://i.postimg.cc/cHdVq2T8/03.png",
-    location: "Online em Belo Horizonte"
+    image: "https://i.postimg.cc/cHdVq2T8/03.png"
   },
   {
     id: 4,
     name: "Bruna L.",
     age: 31,
     bio: "🥵 Aqui é zero papo furado... Gosto de conexão real e umas fotinhas privadas",
-    image: "https://i.postimg.cc/brBMtJPQ/04.png",
-    location: "Online em Porto Alegre"
+    image: "https://i.postimg.cc/brBMtJPQ/04.png"
   },
   {
     id: 5,
     name: "Luiza A.",
     age: 25,
     bio: "🔥 Segura essa energia: carinhosa, mas com fogo nos olhos. topa?",
-    image: "https://i.postimg.cc/FzR8zSMr/05.png",
-    location: "Online em Curitiba"
+    image: "https://i.postimg.cc/FzR8zSMr/05.png"
   },
   {
     id: 6,
     name: "Duda F.",
     age: 27,
     bio: "Gosto de atenção... e quando elogiam minha tatuagem 😏🍓",
-    image: "https://i.postimg.cc/sf6b8nWv/06.png",
-    location: "Online em Salvador"
+    image: "https://i.postimg.cc/sf6b8nWv/06.png"
   },
   {
     id: 7,
     name: "Carol V.",
     age: 23,
     bio: "tímida só nos primeiros 5min... depois? já tô te mandando áudio rindo alto kkk 🎧",
-    image: "https://i.postimg.cc/3JkzHgj9/07.png",
-    location: "Online em Fortaleza"
+    image: "https://i.postimg.cc/3JkzHgj9/07.png"
   },
   {
     id: 8,
     name: "Lívia C.",
     age: 30,
     bio: "gosto de conversa safada inteligente 👠💬 vem sem pressão, mas com intenção",
-    image: "https://i.postimg.cc/QxvwNH0D/08.png",
-    location: "Online em Recife"
+    image: "https://i.postimg.cc/QxvwNH0D/08.png"
   },
   {
     id: 9,
     name: "Raíssa M.",
     age: 26,
     bio: "📵 sem papo de bom dia e sumiu... se vier, vem inteiro.",
-    image: "https://i.postimg.cc/3xp6kYcv/09.png",
-    location: "Online em Brasília"
+    image: "https://i.postimg.cc/3xp6kYcv/09.png"
   },
   {
     id: 10,
     name: "Manu T.",
     age: 29,
     bio: "você me ganha no papo... e talvez numa fotinha se eu gostar 🥂📷",
-    image: "https://i.postimg.cc/jjb1Nmpk/10.png",
-    location: "Online em Florianópolis"
+    image: "https://i.postimg.cc/jjb1Nmpk/10.png"
   }
 ];
+
+// Função para gerar perfis com cidades falsas baseadas no estado do usuário
+const generateProfilesWithFakeCities = (userState: string): Profile[] => {
+  return baseProfiles.map(profile => ({
+    ...profile,
+    location: `Online em ${getFakeCityForProfile(userState)}`
+  }));
+};
 
 export const CurtirPerfis = () => {
   const navigate = useNavigate();
@@ -102,8 +102,48 @@ export const CurtirPerfis = () => {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [buttonPressed, setButtonPressed] = useState<'like' | 'pass' | null>(null);
   const [matches, setMatches] = useState(0);
+  const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [loadingProfiles, setLoadingProfiles] = useState(true);
 
-  const currentProfile = mockProfiles[currentIndex];
+  // Detectar localização do usuário e gerar perfis com cidades falsas
+  useEffect(() => {
+    const initializeProfiles = async () => {
+      try {
+        const locationData = await getUserLocationData();
+        console.log('Estado do usuário detectado:', locationData.state);
+        
+        // Gerar perfis com cidades falsas baseadas no estado do usuário
+        const profilesWithFakeCities = generateProfilesWithFakeCities(locationData.state);
+        setProfiles(profilesWithFakeCities);
+        
+        console.log('Perfis gerados com cidades falsas:', profilesWithFakeCities);
+      } catch (error) {
+        console.error('Erro ao detectar localização:', error);
+        // Fallback para SP se houver erro
+        const fallbackProfiles = generateProfilesWithFakeCities('SP');
+        setProfiles(fallbackProfiles);
+      } finally {
+        setLoadingProfiles(false);
+      }
+    };
+
+    initializeProfiles();
+  }, []);
+
+  const currentProfile = profiles[currentIndex];
+
+  // Mostrar loading enquanto detecta localização
+  if (loadingProfiles) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-black via-zinc-900 to-zinc-800 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mx-auto mb-4"></div>
+          <p className="text-white text-lg">Detectando sua localização...</p>
+          <p className="text-zinc-400 text-sm mt-2">Encontrando perfis próximos a você</p>
+        </div>
+      </div>
+    );
+  }
 
   const playSound = (soundFile: string) => {
     const audio = new Audio(soundFile);
@@ -145,7 +185,7 @@ export const CurtirPerfis = () => {
     setIsTransitioning(true);
     
     setTimeout(() => {
-      if (currentIndex < mockProfiles.length - 1) {
+      if (currentIndex < profiles.length - 1) {
         setCurrentIndex(prev => prev + 1);
         setIsTransitioning(false);
         setButtonPressed(null);
@@ -173,7 +213,7 @@ export const CurtirPerfis = () => {
         {/* Progress indicator */}
         <div className="mb-6">
           <div className="flex gap-1">
-            {mockProfiles.map((_, index) => (
+            {profiles.map((_, index) => (
               <div
                 key={index}
                 className={`flex-1 h-2 rounded-full transition-all duration-300 ${
@@ -183,7 +223,7 @@ export const CurtirPerfis = () => {
             ))}
           </div>
           <p className="text-center text-white/70 mt-2 text-sm font-['Poppins']">
-            Perfil {currentIndex + 1} de {mockProfiles.length}
+            Perfil {currentIndex + 1} de {profiles.length}
           </p>
         </div>
 

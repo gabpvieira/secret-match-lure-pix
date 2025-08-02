@@ -166,6 +166,11 @@ const ProfileOnboarding: React.FC<ProfileOnboardingProps> = ({ onComplete }) => 
           photoDeleteUrl: deleteUrl
         });
         
+        // Disparar evento do Facebook Pixel
+        if (typeof window !== 'undefined' && (window as any).dispararIniciouFunil) {
+          (window as any).dispararIniciouFunil();
+        }
+        
       } catch (error) {
         console.error('Erro no upload:', error);
         setErrors({ photo: 'Erro ao fazer upload da imagem. Tente novamente.' });
