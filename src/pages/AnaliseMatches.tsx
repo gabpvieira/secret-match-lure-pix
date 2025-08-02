@@ -108,11 +108,11 @@ const AnaliseMatches: React.FC = () => {
     const textTimer = setInterval(() => {
       setAnalysisText(prev => {
         const texts = [
-          'Analisando seu perfil...',
-          'Ela tá vendo seu perfil agora...',
-          'Calculando compatibilidade...',
-          'Encontrando matches perfeitos...',
-          'Quase pronto...'
+          'Ela viu seu perfil... e parou por alguns segundos 👀',
+          'Buscando perfis femininos que curtiram sua vibe…',
+          'Analisando compatibilidades com alto desejo de resposta…',
+          '3 mulheres online agora com interesse no seu tipo…',
+          'Conexões reais encontradas. Validando intenção…'
         ];
         const currentIndex = texts.indexOf(prev);
         return texts[(currentIndex + 1) % texts.length];
@@ -181,8 +181,8 @@ const AnaliseMatches: React.FC = () => {
             Analisando seu perfil...
           </h1>
           
-          <p className="text-gray-300 mb-6 transition-all duration-500">
-            {analysisSteps[currentStep]}
+          <p className="text-gray-300 mb-6 transition-opacity duration-500 ease-in-out">
+            {analysisText}
           </p>
 
           {/* Progress Bar */}
