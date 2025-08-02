@@ -11,7 +11,7 @@ interface CheckoutProps {
 
 export const Checkout = ({ onPurchase }: CheckoutProps) => {
   const navigate = useNavigate();
-  const [timeLeft, setTimeLeft] = useState(10 * 60); // 10 minutes in seconds
+  const [timeLeft, setTimeLeft] = useState(4 * 60 + 30); // 4:30 minutes in seconds
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -35,34 +35,61 @@ export const Checkout = ({ onPurchase }: CheckoutProps) => {
 
   const handlePurchase = (planId: string) => {
     onPurchase(planId);
-    navigate(`/acesso-premium-liberado?plano=${planId}`);
+    
+    // Redirecionar para os links específicos de cada plano
+    const planLinks = {
+      'espiadinha': 'https://www.ggcheckout.com/checkout/v2/sCpufru9Swlb8JHOKYSh',
+      'conversaquente': 'https://www.ggcheckout.com/checkout/v2/Rm6m8FX3P0gnfn02pEyM',
+      'vipzao': 'https://www.ggcheckout.com/checkout/v2/XW9SfWHflnGXJsi16gBq'
+    };
+    
+    const link = planLinks[planId as keyof typeof planLinks];
+    if (link) {
+      window.open(link, '_blank');
+    } else {
+      navigate(`/acesso-premium-liberado?plano=${planId}`);
+    }
   };
 
   const plans = [
     {
       id: "espiadinha",
-      name: "ESPIADINHA PROIBIDA",
-      price: "R$9,90",
-      description: "Só o básico... mas já é o suficiente pra subir o sangue.",
-      features: ["Veja o que ela separou só pra você", "Acesso direto às fotos liberadas", "Visualização rápida sem enrolação"],
-      buttonText: "QUERO DAR UMA ESPIADA 👀"
+      name: "Espiadinha Básica",
+      price: "R$ 19,90",
+      description: "Acesso básico aos matches",
+      features: [
+        "Ver quem te curtiu",
+        "Fotos sem censura",
+        "Chat liberado por 24h"
+      ],
+      buttonText: "Espiar Agora"
     },
     {
       id: "conversaquente",
-      name: "CONVERSA QUENTE + GALERIA LIBERADA",
-      price: "R$29,90",
-      description: "Ela quer falar com você. Mas só com quem desbloqueia tudo.",
-      features: ["Fotos privadas + chat sem limites", "Converse com quem quiser, na hora", "Receba atenção antes dos outros"],
+      name: "Conversa Quente + Galeria",
+      price: "R$ 39,90",
+      description: "Acesso completo + galeria",
+      features: [
+        "Tudo do plano anterior",
+        "Galeria completa desbloqueada",
+        "Chat ilimitado",
+        "Fotos íntimas exclusivas"
+      ],
       popular: true,
-      buttonText: "BORA TROCAR IDEIA SUJA 🔥"
+      buttonText: "Liberar Tudo"
     },
     {
       id: "vipzao",
-      name: "ACESSO TOTAL + CONTEÚDO SAFADO VIP",
-      price: "R$49,90",
-      description: "Desbloqueia tudo. Ela vai te mandar o que ninguém mais vê.",
-      features: ["Acesso vitalício sem bloqueios", "Conteúdos secretos só pros VIPs", "Surpresas íntimas exclusivas"],
-      buttonText: "QUERO TUDO. TUDO MESMO 😈"
+      name: "Acesso Total VIP",
+      price: "R$ 59,90",
+      description: "Experiência premium completa",
+      features: [
+        "Tudo dos planos anteriores",
+        "Vídeos íntimos exclusivos",
+        "Chamada de vídeo liberada",
+        "Conteúdo VIP atualizado diariamente"
+      ],
+      buttonText: "Virar VIP"
     }
   ];
 
@@ -80,7 +107,7 @@ export const Checkout = ({ onPurchase }: CheckoutProps) => {
           
           <div className="bg-[#FF0033] border border-red-600 rounded-lg p-4 sm:p-6 mb-6 sm:mb-8 mx-2 shadow-lg">
             <div className="text-center">
-              <p className="text-white font-bold text-lg sm:text-xl mb-2">🔥 Você tem {formatTime(timeLeft)} pra provar que não é só mais um curioso.</p>
+              <p className="text-white font-bold text-lg sm:text-xl mb-2">Você tem {formatTime(timeLeft)} pra provar que não é só mais um curioso.</p>
               <div className="text-center">
                 <span className="text-3xl sm:text-4xl font-bold text-white">
                   {String(Math.floor(timeLeft / 60)).padStart(2, '0')}:
