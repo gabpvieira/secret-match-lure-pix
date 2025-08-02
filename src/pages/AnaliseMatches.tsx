@@ -35,8 +35,9 @@ const AnaliseMatches: React.FC = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(true);
   const [matches, setMatches] = useState<Match[]>([]);
   const [currentStep, setCurrentStep] = useState(0);
-  const [showResults, setShowResults] = useState(false);
-  const [showOffer, setShowOffer] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [analysisText, setAnalysisText] = useState('Analisando seu perfil...');
+  const [showPreview, setShowPreview] = useState(false);
   const [userPhoto, setUserPhoto] = useState<string>('');
   const navigate = useNavigate();
 
@@ -81,38 +82,51 @@ const AnaliseMatches: React.FC = () => {
   ];
 
   useEffect(() => {
-    // Simular análise por 20 segundos
+    // Simular análise de perfil por 15 segundos
     const analysisTimer = setTimeout(() => {
       setIsAnalyzing(false);
-      setMatches(mockMatches);
+      setShowPreview(true);
       
-      // Mostrar resultados após 2 segundos
-      setTimeout(() => setShowResults(true), 2000);
-      
-      // Mostrar oferta após 5 segundos
-      setTimeout(() => setShowOffer(true), 5000);
-    }, 20000);
+      // Redirecionar para checkout após 5 segundos do preview
+      setTimeout(() => {
+        navigate('/checkout');
+      }, 5000);
+    }, 15000); // 15 segundos de análise
 
-    // Atualizar texto da análise a cada 5 segundos
-    const stepTimer = setInterval(() => {
-      setCurrentStep(prev => (prev + 1) % analysisSteps.length);
-    }, 5000);
+    // Atualizar progresso
+    const progressTimer = setInterval(() => {
+      setProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(progressTimer);
+          return 100;
+        }
+        return prev + 6.67; // ~6.67% a cada segundo (15 segundos total)
+      });
+    }, 1000);
+
+    // Atualizar texto da análise a cada 3 segundos
+    const textTimer = setInterval(() => {
+      setAnalysisText(prev => {
+        const texts = [
+          'Analisando seu perfil...',
+          'Ela tá vendo seu perfil agora...',
+          'Calculando compatibilidade...',
+          'Encontrando matches perfeitos...',
+          'Quase pronto...'
+        ];
+        const currentIndex = texts.indexOf(prev);
+        return texts[(currentIndex + 1) % texts.length];
+      });
+    }, 3000);
 
     return () => {
       clearTimeout(analysisTimer);
-      clearInterval(stepTimer);
+      clearInterval(progressTimer);
+      clearInterval(textTimer);
     };
-  }, []);
+  }, [navigate]);
 
-  const handleContinue = () => {
-    // Redirecionar para página principal ou checkout
-    navigate('/');
-  };
-
-  const handleUpgrade = () => {
-    // Redirecionar para checkout Premium
-    navigate('/checkout');
-  };
+  // Função removida - redirecionamento automático implementado
 
   if (isAnalyzing) {
     return (
@@ -190,207 +204,76 @@ const AnaliseMatches: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 p-4">
       <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          {/* User Photo in Results */}
-          <div className="relative w-24 h-24 mx-auto mb-6">
-            <div className="w-full h-full rounded-full overflow-hidden border-4 border-gradient-to-r from-green-400 to-blue-500 shadow-xl">
-              <img 
-                src={userPhoto || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face"} 
-                alt="Seu perfil"
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src = '/placeholder.svg';
-                }}
-              />
-            </div>
-            {/* Success Badge */}
-            <div className="absolute -bottom-2 -right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full font-bold border-2 border-white">
-              ✓ ANALISADO
-            </div>
-          </div>
-          
-          <h1 className="text-3xl font-bold text-white mb-2">
-            🎉 Análise Completa!
-          </h1>
-          <p className="text-gray-300">
-            Encontramos {matches.length} matches perfeitos para você
-          </p>
-        </div>
-
-        {/* Matches Grid */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
-          {matches.map((match, index) => (
-            <div 
-              key={match.id}
-              className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700/50 transform transition-all duration-500 hover:scale-105"
-              style={{ animationDelay: `${index * 0.2}s` }}
-            >
-              <div className="text-center">
-                <div className="relative mb-4">
-                  <img 
-                    src={match.photo}
-                    alt={match.name}
-                    className="w-24 h-24 rounded-full mx-auto object-cover border-4 border-gradient-to-r from-red-500 to-purple-500"
-                  />
-                  <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full font-bold">
-                    {match.compatibility}%
-                  </div>
-                </div>
-                
-                <h3 className="text-xl font-bold text-white mb-1">
-                  {match.name}
-                </h3>
-                <p className="text-gray-400 mb-3">
-                  {match.age} anos
-                </p>
-                
-                <div className="bg-gradient-to-r from-red-500/20 to-purple-500/20 rounded-lg p-3">
-                  <p className="text-sm text-gray-300">
-                    💕 {match.compatibility}% de compatibilidade
-                  </p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Resultados Detalhados */}
-        {showResults && (
-          <div className="mt-12 animate-fade-in">
-            <div className="bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-2xl p-6 border border-green-500/30 mb-8">
-              <h2 className="text-2xl font-bold text-white mb-4 text-center">
-                🎯 Análise Completa do Seu Perfil
-              </h2>
-              
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-3 h-3 bg-green-400 rounded-full"></div>
-                    <span className="text-gray-300">Atratividade: <strong className="text-green-400">9.2/10</strong></span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
-                    <span className="text-gray-300">Compatibilidade: <strong className="text-blue-400">94%</strong></span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-3 h-3 bg-purple-400 rounded-full"></div>
-                    <span className="text-gray-300">Popularidade: <strong className="text-purple-400">Alta</strong></span>
-                  </div>
-                </div>
-                
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
-                    <span className="text-gray-300">Matches Potenciais: <strong className="text-yellow-400">127+</strong></span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-3 h-3 bg-red-400 rounded-full"></div>
-                    <span className="text-gray-300">Interesse Recebido: <strong className="text-red-400">89%</strong></span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-3 h-3 bg-pink-400 rounded-full"></div>
-                    <span className="text-gray-300">Sucesso Esperado: <strong className="text-pink-400">Muito Alto</strong></span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Oferta Premium */}
-        {showOffer && (
-          <div className="mt-8 animate-fade-in">
-            <div className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-2xl p-6 border-2 border-yellow-500/50 relative overflow-hidden">
-              {/* Badge de Oferta */}
-              <div className="absolute -top-2 -right-2 bg-red-500 text-white px-4 py-2 rounded-full text-sm font-bold transform rotate-12">
-                🔥 OFERTA LIMITADA
-              </div>
-              
-              <div className="text-center mb-6">
-                <h2 className="text-3xl font-bold text-white mb-2">
-                  🚀 Desbloqueie Seu Potencial Máximo!
-                </h2>
-                <p className="text-gray-300 text-lg">
-                  Upgrade para Premium e multiplique seus matches por <strong className="text-yellow-400">10x</strong>
-                </p>
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-6 mb-8">
-                {/* Plano Gratuito */}
-                <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-600">
-                  <h3 className="text-lg font-bold text-gray-300 mb-3">Plano Gratuito</h3>
-                  <ul className="space-y-2 text-sm text-gray-400">
-                    <li>✅ 3 matches por dia</li>
-                    <li>❌ Mensagens limitadas</li>
-                    <li>❌ Sem super likes</li>
-                    <li>❌ Sem boost de visibilidade</li>
-                  </ul>
-                </div>
-
-                {/* Plano Premium */}
-                <div className="bg-gradient-to-br from-yellow-500/20 to-orange-500/20 rounded-xl p-4 border-2 border-yellow-500/50 relative">
-                  <div className="absolute -top-1 -right-1 bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">
-                    RECOMENDADO
-                  </div>
-                  <h3 className="text-lg font-bold text-yellow-400 mb-3">Premium VIP</h3>
-                  <ul className="space-y-2 text-sm text-gray-300">
-                    <li>🔥 Matches ilimitados</li>
-                    <li>💬 Mensagens ilimitadas</li>
-                    <li>⭐ 5 super likes por dia</li>
-                    <li>🚀 Boost de visibilidade 24h</li>
-                    <li>👑 Perfil destacado</li>
-                    <li>🎯 Filtros avançados</li>
-                  </ul>
-                </div>
-              </div>
-
-              {/* Preço e CTA */}
-              <div className="text-center">
-                <div className="mb-4">
-                  <span className="text-gray-400 line-through text-lg">R$ 49,90/mês</span>
-                  <span className="text-3xl font-bold text-yellow-400 ml-3">R$ 19,90/mês</span>
-                  <span className="bg-red-500 text-white px-2 py-1 rounded text-sm ml-2">60% OFF</span>
-                </div>
-                
-                <button
-                  onClick={handleUpgrade}
-                  className="bg-gradient-to-r from-yellow-500 to-orange-500 text-black px-8 py-4 rounded-full font-bold text-lg hover:from-yellow-600 hover:to-orange-600 transition-all duration-300 transform hover:scale-105 shadow-lg mb-4"
+        {/* Preview Section */}
+        {showPreview && (
+          <div className="text-center animate-fade-in">
+            <h1 className="text-3xl font-bold text-white mb-2">
+              🔥 Matches Encontrados!
+            </h1>
+            <p className="text-gray-300 mb-8">
+              Encontramos 3 matches com alta compatibilidade para você
+            </p>
+            
+            {/* Preview Matches - Blurred */}
+            <div className="grid md:grid-cols-3 gap-6 mb-8">
+              {mockMatches.slice(0, 3).map((match, index) => (
+                <div 
+                  key={match.id}
+                  className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700/50 relative overflow-hidden"
+                  style={{ animationDelay: `${index * 0.3}s` }}
                 >
-                  🚀 ATIVAR PREMIUM AGORA
-                </button>
-                
-                <p className="text-gray-400 text-sm">
-                  ⏰ Oferta válida apenas hoje • 🔒 Pagamento seguro • ❌ Cancele quando quiser
-                </p>
+                  {/* Blur Overlay */}
+                  <div className="absolute inset-0 bg-black/30 backdrop-blur-md rounded-2xl z-10 flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="text-4xl mb-2">🔒</div>
+                      <p className="text-white font-bold text-sm">PREMIUM</p>
+                    </div>
+                  </div>
+                  
+                  <div className="text-center relative">
+                    <div className="relative mb-4">
+                      <img 
+                        src={match.photo}
+                        alt={match.name}
+                        className="w-24 h-24 rounded-full mx-auto object-cover border-4 border-gradient-to-r from-red-500 to-purple-500"
+                      />
+                      <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full font-bold">
+                        {match.compatibility}%
+                      </div>
+                    </div>
+                    
+                    <h3 className="text-xl font-bold text-white mb-1">
+                      {match.name}
+                    </h3>
+                    <p className="text-gray-400 mb-3">
+                      {match.age} anos
+                    </p>
+                    
+                    <div className="bg-gradient-to-r from-red-500/20 to-purple-500/20 rounded-lg p-3">
+                      <p className="text-sm text-gray-300">
+                        💕 {match.compatibility}% de compatibilidade
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <div className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-2xl p-6 border-2 border-yellow-500/50">
+              <h2 className="text-2xl font-bold text-white mb-2">
+                🚀 Desbloqueie Agora!
+              </h2>
+              <p className="text-gray-300 mb-4">
+                Upgrade para Premium e converse com seus matches
+              </p>
+              <div className="text-yellow-400 font-bold text-lg">
+                Redirecionando para ofertas especiais...
               </div>
             </div>
           </div>
         )}
 
-        {/* CTA Final */}
-        <div className="text-center mt-8">
-          {!showOffer ? (
-            <button
-              onClick={handleContinue}
-              className="bg-gradient-to-r from-red-500 to-purple-600 text-white px-8 py-4 rounded-full font-bold text-lg hover:from-red-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
-            >
-              Começar a Conversar 💬
-            </button>
-          ) : (
-            <button
-              onClick={handleContinue}
-              className="bg-gray-700 text-gray-300 px-6 py-3 rounded-full font-medium hover:bg-gray-600 transition-all duration-300"
-            >
-              Continuar com Plano Gratuito
-            </button>
-          )}
-          
-          <p className="text-gray-400 text-sm mt-4">
-            {!showOffer ? 'Seus matches estão esperando por você!' : 'Ou continue com limitações do plano gratuito'}
-          </p>
-        </div>
+
       </div>
     </div>
   );
