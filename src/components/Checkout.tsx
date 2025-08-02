@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +10,7 @@ interface CheckoutProps {
 }
 
 export const Checkout = ({ onPurchase }: CheckoutProps) => {
+  const navigate = useNavigate();
   const [timeLeft, setTimeLeft] = useState(10 * 60); // 10 minutes in seconds
 
   useEffect(() => {
@@ -31,9 +33,14 @@ export const Checkout = ({ onPurchase }: CheckoutProps) => {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const handlePurchase = (planId: string) => {
+    onPurchase(planId);
+    navigate(`/acesso-premium-liberado?plano=${planId}`);
+  };
+
   const plans = [
     {
-      id: "basic",
+      id: "espiadinha",
       name: "ESPIADINHA PROIBIDA",
       price: "R$9,90",
       description: "Só o básico... mas já é o suficiente pra subir o sangue.",
@@ -41,7 +48,7 @@ export const Checkout = ({ onPurchase }: CheckoutProps) => {
       buttonText: "QUERO DAR UMA ESPIADA 👀"
     },
     {
-      id: "premium",
+      id: "conversaquente",
       name: "CONVERSA QUENTE + GALERIA LIBERADA",
       price: "R$29,90",
       description: "Ela quer falar com você. Mas só com quem desbloqueia tudo.",
@@ -50,7 +57,7 @@ export const Checkout = ({ onPurchase }: CheckoutProps) => {
       buttonText: "BORA TROCAR IDEIA SUJA 🔥"
     },
     {
-      id: "vip",
+      id: "vipzao",
       name: "ACESSO TOTAL + CONTEÚDO SAFADO VIP",
       price: "R$49,90",
       description: "Desbloqueia tudo. Ela vai te mandar o que ninguém mais vê.",
@@ -150,7 +157,7 @@ export const Checkout = ({ onPurchase }: CheckoutProps) => {
                 </ul>
                 
                 <Button 
-                  onClick={() => onPurchase(plan.id)}
+                  onClick={() => handlePurchase(plan.id)}
                   className={`w-full text-sm sm:text-base min-h-[48px] touch-manipulation professional-button font-bold ${plan.popular ? 'bg-gradient-to-r from-primary via-accent to-secondary' : ''}`}
                   variant={plan.popular ? "default" : "outline"}
                 >
