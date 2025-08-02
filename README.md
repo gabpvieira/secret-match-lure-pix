@@ -1,73 +1,64 @@
-# Welcome to your Lovable project
+# Funil FakeTinder
 
-## Project info
+Aplicação de funil de conversão simulando um app de relacionamentos, desenvolvida com React, TypeScript e Vite.
 
-**URL**: https://lovable.dev/projects/d3b5ab29-990f-4f1d-9e8a-eeae20fefe58
+## 🚀 Funcionalidades
 
-## How can I edit this code?
+- **Onboarding Interativo**: Processo de cadastro com upload de foto via ImgBB
+- **Sistema de Swipe**: Interface similar ao Tinder para curtir perfis
+- **Análise de Matches**: Página de resultados com animações e foto do usuário
+- **Funil de Conversão**: Fluxo completo direcionando para checkout premium
+- **Design Responsivo**: Interface moderna e adaptável
 
-There are several ways of editing your application.
+## 🛠️ Tecnologias
 
-**Use Lovable**
+- **React 18** com TypeScript
+- **Vite** para build e desenvolvimento
+- **Tailwind CSS** para estilização
+- **Radix UI** para componentes acessíveis
+- **React Router** para navegação
+- **ImgBB API** para upload de imagens
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/d3b5ab29-990f-4f1d-9e8a-eeae20fefe58) and start prompting.
+## 📦 Instalação
 
-Changes made via Lovable will be committed automatically to this repo.
+```bash
+# Clone o repositório
+git clone https://github.com/gabpvieira/Funil-FakeTinder.git
 
-**Use your preferred IDE**
+# Entre no diretório
+cd Funil-FakeTinder
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+# Instale as dependências
+npm install
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Execute em modo de desenvolvimento
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## 🌐 Deploy
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+O projeto está configurado para deploy no Vercel:
 
-**Use GitHub Codespaces**
+```bash
+# Build para produção
+npm run build
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+# Preview do build
+npm run preview
+```
 
-## What technologies are used for this project?
+## 📱 Fluxo da Aplicação
 
-This project is built with:
+1. **Página Inicial**: Apresentação e call-to-action
+2. **Onboarding**: Cadastro com upload de foto
+3. **Curtir Perfis**: Sistema de swipe com perfis fictícios
+4. **Análise de Matches**: Resultados com foto do usuário
+5. **Checkout**: Oferta premium ou continuação gratuita
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 🔧 Configuração
 
-## How can I deploy this project?
+Para usar o upload de imagens, configure a API key do ImgBB no componente `ProfileOnboarding.tsx`.
 
-Simply open [Lovable](https://lovable.dev/projects/d3b5ab29-990f-4f1d-9e8a-eeae20fefe58) and click on Share -> Publish.
+## 📄 Licença
 
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+Este projeto é para fins educacionais e demonstração de funil de conversão.
