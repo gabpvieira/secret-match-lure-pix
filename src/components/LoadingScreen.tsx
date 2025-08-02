@@ -11,15 +11,17 @@ export const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
   const [progress, setProgress] = useState(0);
 
   const messages = [
-    "Ela tá vendo seu perfil agora…",
-    "Uma delas liberou algo especial. Esperando sua resposta…",
-    "Pronto pra destravar o que ela já mandou?"
+    "Ela viu seu perfil... e parou por alguns segundos 👀",
+    "Buscando perfis femininos que curtiram sua vibe…",
+    "Analisando compatibilidades com alto desejo de resposta…",
+    "3 mulheres online agora com interesse no seu tipo…",
+    "Conexões reais encontradas. Validando intenção…"
   ];
 
   useEffect(() => {
     const interval = setInterval(() => {
       setProgress(prev => {
-        const newProgress = prev + 2;
+        const newProgress = prev + 1;
         if (newProgress >= 100) {
           clearInterval(interval);
           setTimeout(onComplete, 500);
@@ -27,11 +29,11 @@ export const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
         }
         return newProgress;
       });
-    }, 300);
+    }, 180); // Duração total de ~18 segundos
 
     const messageInterval = setInterval(() => {
       setCurrentMessage(prev => (prev + 1) % messages.length);
-    }, 5000);
+    }, 3000); // Troca a cada 3 segundos
 
     return () => {
       clearInterval(interval);
@@ -51,7 +53,7 @@ export const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
             Analisando seu perfil...
           </h2>
           
-          <p className="text-muted-foreground mb-6 text-body">
+          <p className="text-muted-foreground mb-6 text-body transition-opacity duration-500 ease-in-out">
             {messages[currentMessage]}
           </p>
           
