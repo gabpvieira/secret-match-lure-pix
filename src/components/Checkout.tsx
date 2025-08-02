@@ -36,19 +36,8 @@ export const Checkout = ({ onPurchase }: CheckoutProps) => {
   const handlePurchase = (planId: string) => {
     onPurchase(planId);
     
-    // Redirecionar para os links específicos de cada plano
-    const planLinks = {
-      'espiadinha': 'https://www.ggcheckout.com/checkout/v2/sCpufru9Swlb8JHOKYSh',
-      'conversaquente': 'https://www.ggcheckout.com/checkout/v2/Rm6m8FX3P0gnfn02pEyM',
-      'vipzao': 'https://www.ggcheckout.com/checkout/v2/XW9SfWHflnGXJsi16gBq'
-    };
-    
-    const link = planLinks[planId as keyof typeof planLinks];
-    if (link) {
-      window.open(link, '_blank');
-    } else {
-      navigate(`/acesso-premium-liberado?plano=${planId}`);
-    }
+    // Redirecionar primeiro para página com slug do plano
+    navigate(`/plano/${planId}`);
   };
 
   const plans = [

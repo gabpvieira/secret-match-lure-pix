@@ -10,6 +10,7 @@ import CurtirPerfis from "./pages/CurtirPerfis";
 import AnaliseMatches from "./pages/AnaliseMatches";
 import { Checkout } from "./components/Checkout";
 import { AcessoPremiumLiberado } from "./pages/AcessoPremiumLiberado";
+import PlanoDetalhes from "./pages/PlanoDetalhes";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/final" element={<AnaliseMatches />} />
           <Route path="/analise-matches" element={<AnaliseMatches />} />
           <Route path="/checkout" element={<Checkout onPurchase={(plan) => console.log('Plano selecionado:', plan)} />} />
+          <Route path="/plano/:slug" element={<PlanoDetalhes />} />
           <Route path="/acesso-premium-liberado" element={<AcessoPremiumLiberado />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
