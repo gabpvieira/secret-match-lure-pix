@@ -3,7 +3,7 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Progress } from './ui/progress';
-import { Upload, MapPin, Heart, Sparkles, Camera, MessageCircle, Users, Flame, Star } from 'lucide-react';
+import { Upload, MapPin, Heart, Sparkles, Camera, MessageCircle, Users, Flame, Star, Zap, CheckSquare } from 'lucide-react';
 import { useGeolocation } from '../hooks/useGeolocation';
 
 interface ProfileData {
@@ -367,9 +367,9 @@ const ProfileOnboarding: React.FC<ProfileOnboardingProps> = ({ onComplete }) => 
                   />
                 </div>
                 
-                <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-3">
-                  <p className="text-xs sm:text-sm text-body text-green-400 text-center flex items-center justify-center gap-2">
-                    <Sparkles className="w-4 h-4" />
+                <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4">
+                  <p className="text-sm sm:text-base text-green-400 text-center flex items-center justify-center gap-2 font-semibold">
+                    <Zap className="w-5 h-5" />
                     Perfis com foto têm até 7x mais chances de serem selecionados
                   </p>
                 </div>
@@ -389,7 +389,7 @@ const ProfileOnboarding: React.FC<ProfileOnboardingProps> = ({ onComplete }) => 
               {currentStep === 3 && 'Quase lá'}
               {currentStep === 4 && (
                 <>
-                  <Heart className="w-4 h-4 mr-2" />
+                  <CheckSquare className="w-4 h-4 mr-2" />
                   Criar Meu Perfil
                 </>
               )}
