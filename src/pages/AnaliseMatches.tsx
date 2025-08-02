@@ -1,6 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+// Custom CSS for scan animations
+const scanStyles = `
+  @keyframes scanLine {
+    0% { transform: translateY(-100%); opacity: 0; }
+    50% { opacity: 1; }
+    100% { transform: translateY(100%); opacity: 0; }
+  }
+  
+  @keyframes radarSweep {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  .scan-line {
+    animation: scanLine 2s infinite;
+  }
+  
+  .radar-sweep {
+    animation: radarSweep 3s linear infinite;
+  }
+`;
+
 interface Match {
   id: number;
   name: string;
@@ -95,12 +117,13 @@ const AnaliseMatches: React.FC = () => {
   if (isAnalyzing) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex items-center justify-center p-4">
+        <style>{scanStyles}</style>
         <div className="text-center max-w-md mx-auto">
           {/* Loading Animation with User Photo */}
           <div className="relative mb-8">
-            <div className="w-32 h-32 mx-auto relative">
+            <div className="w-40 h-40 mx-auto relative">
               {/* User Photo */}
-              <div className="absolute inset-4 rounded-full overflow-hidden bg-gray-800 border-2 border-white/20">
+              <div className="absolute inset-4 rounded-full overflow-hidden bg-gray-800 border-4 border-white/30 shadow-2xl">
                 <img 
                   src={userPhoto || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face"} 
                   alt="Seu perfil"
@@ -112,13 +135,30 @@ const AnaliseMatches: React.FC = () => {
                 />
               </div>
               
-              {/* Animated Rings */}
-              <div className="absolute inset-0 border-4 border-red-500/20 rounded-full"></div>
-              <div className="absolute inset-0 border-4 border-transparent border-t-red-500 rounded-full animate-spin"></div>
-              <div className="absolute inset-2 border-4 border-transparent border-t-purple-500 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
+              {/* Scanning Animation */}
+              <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-red-500 animate-spin" style={{ animationDuration: '2s' }}></div>
+              <div className="absolute inset-1 rounded-full border-4 border-transparent border-t-blue-500 animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
+              <div className="absolute inset-2 rounded-full border-3 border-transparent border-t-purple-500 animate-spin" style={{ animationDuration: '1s' }}></div>
               
-              {/* Pulse effect */}
-              <div className="absolute inset-0 border-2 border-white/30 rounded-full animate-pulse"></div>
+              {/* Radar Sweep Effect */}
+               <div className="absolute inset-0 rounded-full overflow-hidden">
+                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-green-500/30 to-transparent radar-sweep" style={{ clipPath: 'polygon(50% 50%, 50% 0%, 100% 50%)' }}></div>
+               </div>
+               
+               {/* Vertical Scan Line */}
+               <div className="absolute inset-4 rounded-full overflow-hidden">
+                 <div className="absolute w-full h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent scan-line" style={{ top: '50%', left: '0' }}></div>
+               </div>
+              
+              {/* Pulse Rings */}
+              <div className="absolute inset-0 border-2 border-green-400/40 rounded-full animate-ping" style={{ animationDuration: '2s' }}></div>
+              <div className="absolute -inset-2 border-2 border-blue-400/20 rounded-full animate-ping" style={{ animationDuration: '3s', animationDelay: '0.5s' }}></div>
+              
+              {/* Corner Scan Lines */}
+              <div className="absolute top-2 left-2 w-4 h-4 border-l-2 border-t-2 border-green-400 animate-pulse"></div>
+              <div className="absolute top-2 right-2 w-4 h-4 border-r-2 border-t-2 border-green-400 animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+              <div className="absolute bottom-2 left-2 w-4 h-4 border-l-2 border-b-2 border-green-400 animate-pulse" style={{ animationDelay: '1s' }}></div>
+              <div className="absolute bottom-2 right-2 w-4 h-4 border-r-2 border-b-2 border-green-400 animate-pulse" style={{ animationDelay: '1.5s' }}></div>
             </div>
           </div>
 
@@ -152,6 +192,25 @@ const AnaliseMatches: React.FC = () => {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
+          {/* User Photo in Results */}
+          <div className="relative w-24 h-24 mx-auto mb-6">
+            <div className="w-full h-full rounded-full overflow-hidden border-4 border-gradient-to-r from-green-400 to-blue-500 shadow-xl">
+              <img 
+                src={userPhoto || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face"} 
+                alt="Seu perfil"
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = '/placeholder.svg';
+                }}
+              />
+            </div>
+            {/* Success Badge */}
+            <div className="absolute -bottom-2 -right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full font-bold border-2 border-white">
+              ✓ ANALISADO
+            </div>
+          </div>
+          
           <h1 className="text-3xl font-bold text-white mb-2">
             🎉 Análise Completa!
           </h1>
