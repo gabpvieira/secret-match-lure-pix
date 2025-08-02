@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
@@ -8,7 +8,7 @@ import { useGeolocation } from '../hooks/useGeolocation';
 
 interface ProfileData {
   name: string;
-  age: number;
+  age: number | undefined;
   city: string;
   preference: string;
   idealType: string;
@@ -28,7 +28,7 @@ const ProfileOnboarding: React.FC<ProfileOnboardingProps> = ({ onComplete }) => 
   
   const [formData, setFormData] = useState<ProfileData>({
     name: '',
-    age: 18,
+    age: undefined,
     city: city,
     preference: '',
     idealType: '',
@@ -40,6 +40,37 @@ const ProfileOnboarding: React.FC<ProfileOnboardingProps> = ({ onComplete }) => 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [buttonValidated, setButtonValidated] = useState(false);
+
+  // Atualizar cidade quando detectada
+  // Atualizar cidade e gerenciar cache de foto
+  useEffect(() => {
+    setFormData(prev => ({ ...prev, city: city }));
+    
+    // Limpar cache de foto ao sair da aplicação (privacidade)
+    const handleBeforeUnload = () => {
+      // O sessionStorage já se limpa automaticamente ao fechar a aba
+    };
+    
+    const handleVisibilityChange = () => {
+      // Limpar cache quando a aba fica inativa por muito tempo
+      if (document.hidden) {
+        setTimeout(() => {
+          if (document.hidden) {
+            sessionStorage.removeItem('userPhotoCache');
+          }
+        }, 300000); // 5 minutos de inatividade
+      }
+    };
+    
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [city]);
 
   const validateStep = (step: number): boolean => {
     const newErrors: Record<string, string> = {};
@@ -47,7 +78,7 @@ const ProfileOnboarding: React.FC<ProfileOnboardingProps> = ({ onComplete }) => 
     switch (step) {
       case 1:
         if (!formData.name.trim()) newErrors.name = 'Nome é obrigatório';
-        if (formData.age < 18) newErrors.age = 'Idade mínima é 18 anos';
+        if (!formData.age || formData.age < 18) newErrors.age = 'Idade deve ser 18 ou mais';
         break;
       case 2:
         if (!formData.preference) newErrors.preference = 'Selecione uma opção';
@@ -68,6 +99,8 @@ const ProfileOnboarding: React.FC<ProfileOnboardingProps> = ({ onComplete }) => 
     if (validateStep(currentStep)) {
       if (currentStep < 4) {
         setCurrentStep(currentStep + 1);
+        // Scroll para o topo ao avançar etapa
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
         handleComplete();
       }
@@ -82,10 +115,15 @@ const ProfileOnboarding: React.FC<ProfileOnboardingProps> = ({ onComplete }) => 
         localStorage.setItem('userProfile', JSON.stringify({
           name: formData.name,
           age: formData.age,
-          city: formData.city,
+          city: city || 'Localização não detectada',
           photoUrl: formData.photoUrl,
           photoDeleteUrl: formData.photoDeleteUrl
         }));
+        
+        // Manter cache de sessão da foto para acesso rápido
+        if (formData.photoUrl) {
+          sessionStorage.setItem('userPhotoCache', formData.photoUrl);
+        }
         
         // Programar exclusão da foto após 1 hora
         if (formData.photoDeleteUrl) {
@@ -102,7 +140,13 @@ const ProfileOnboarding: React.FC<ProfileOnboardingProps> = ({ onComplete }) => 
         // Simular processamento - ajustado para 17 segundos
         await new Promise(resolve => setTimeout(resolve, 17000));
         
-        onComplete(formData);
+        // Criar dados finais com a cidade detectada automaticamente
+        const finalProfileData = {
+          ...formData,
+          city: city || 'Localização não detectada'
+        };
+        
+        onComplete(finalProfileData);
     } catch (error) {
       console.error('Erro ao processar perfil:', error);
     } finally {
@@ -159,6 +203,9 @@ const ProfileOnboarding: React.FC<ProfileOnboardingProps> = ({ onComplete }) => 
         // Fazer upload para ImgBB
         const { url, deleteUrl } = await uploadToImgBB(file);
         
+        // Salvar foto no cache de sessão para acesso rápido
+        sessionStorage.setItem('userPhotoCache', url);
+        
         setFormData({ 
           ...formData, 
           photo: file,
@@ -200,6 +247,14 @@ const ProfileOnboarding: React.FC<ProfileOnboardingProps> = ({ onComplete }) => 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/10 py-4 sm:py-8 px-4 sm:px-6">
       <div className="max-w-md mx-auto">
+        {/* Logo */}
+        <div className="flex justify-center mb-6">
+          <img 
+            src="https://i.postimg.cc/85LBXJdp/LOGO-PNG-MATCH-SECRETO.png" 
+            alt="Match Secreto" 
+            className="h-10 sm:h-12 w-auto object-contain"
+          />
+        </div>
         {/* Progress Bar */}
         <div className="mb-6 sm:mb-8">
           <div className="flex justify-between text-xs sm:text-sm text-muted-foreground mb-2">
@@ -240,8 +295,19 @@ const ProfileOnboarding: React.FC<ProfileOnboardingProps> = ({ onComplete }) => 
                   <Input
                     type="number"
                     min="18"
-                    value={formData.age}
-                    onChange={(e) => setFormData({ ...formData, age: parseInt(e.target.value) || 18 })}
+                    value={formData.age || ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (value === '') {
+                        setFormData({ ...formData, age: undefined });
+                      } else {
+                        const numValue = parseInt(value);
+                        if (!isNaN(numValue)) {
+                          setFormData({ ...formData, age: numValue });
+                        }
+                      }
+                    }}
+                    placeholder="Digite sua idade"
                     className={errors.age ? 'border-red-500' : ''}
                   />
                   {errors.age && <p className="text-red-500 text-xs mt-1">{errors.age}</p>}
@@ -250,18 +316,18 @@ const ProfileOnboarding: React.FC<ProfileOnboardingProps> = ({ onComplete }) => 
                 <div>
                   <label className="block text-sm text-caption font-medium mb-2">Cidade</label>
                   <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-green-400" />
                     <Input
                       type="text"
-                      value={formData.city}
-                      onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                      className="pl-10"
-                      placeholder="Sua cidade"
+                      value={city || 'Detectando localização...'}
+                      readOnly
+                      className="pl-10 bg-green-50 border-green-200 text-green-700 cursor-not-allowed"
+                      placeholder="Detectando sua localização..."
                     />
                   </div>
-                  <p className="text-xs text-green-400 mt-1 flex items-center gap-1">
+                  <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
                     <MapPin className="w-3 h-3" />
-                    Local detectado: {city}
+                    ✓ Local detectado automaticamente
                   </p>
                 </div>
               </div>
@@ -270,25 +336,35 @@ const ProfileOnboarding: React.FC<ProfileOnboardingProps> = ({ onComplete }) => 
             {/* Step 2: Meeting Preferences */}
             {currentStep === 2 && (
               <div className="space-y-4">
-                <h3 className="text-lg text-subheading text-center mb-4">O que você procura aqui?</h3>
+                <h3 className="text-lg text-subheading text-center mb-4 font-semibold">
+                  O que você REALMENTE procura aqui?
+                </h3>
                 <div className="space-y-3">
                   {[
-                    'Conversas interessantes',
-                    'Conexão emocional',
-                    'Momentos íntimos',
-                    'Ver até onde vai...'
+                    { text: 'Papo bom que rende coisa melhor...', icon: MessageCircle, color: 'from-blue-500/20 to-blue-600/20', borderColor: 'border-cyan-400 ring-2 ring-cyan-400/50 shadow-lg shadow-cyan-400/20', checkColor: 'bg-cyan-400', textColor: 'text-cyan-300' },
+                    { text: 'Alguém pra mexer com a mente (e com o resto 👀)', icon: Heart, color: 'from-pink-500/20 to-pink-600/20', borderColor: 'border-pink-400 ring-2 ring-pink-400/50 shadow-lg shadow-pink-400/20', checkColor: 'bg-pink-400', textColor: 'text-pink-300' },
+                    { text: 'Segredos íntimos sem muita enrolação', icon: Flame, color: 'from-red-500/20 to-red-600/20', borderColor: 'border-red-400 ring-2 ring-red-400/50 shadow-lg shadow-red-400/20', checkColor: 'bg-red-400', textColor: 'text-red-300' },
+                    { text: 'Ver até onde essa loucura vai dar...', icon: Sparkles, color: 'from-purple-500/20 to-purple-600/20', borderColor: 'border-purple-400 ring-2 ring-purple-400/50 shadow-lg shadow-purple-400/20', checkColor: 'bg-purple-400', textColor: 'text-purple-300' }
                   ].map((option) => (
-                    <label key={option} className="flex items-center space-x-3 p-3 rounded-lg border cursor-pointer hover:bg-muted/50 transition-colors">
-                      <input
-                        type="radio"
-                        name="preference"
-                        value={option}
-                        checked={formData.preference === option}
-                        onChange={(e) => setFormData({ ...formData, preference: e.target.value })}
-                        className="text-primary"
-                      />
-                      <span className="text-sm sm:text-base text-body">{option}</span>
-                    </label>
+                    <div
+                      key={option.text}
+                      onClick={() => setFormData({ ...formData, preference: option.text })}
+                      className={`p-4 rounded-lg border-2 cursor-pointer transition-all bg-gradient-to-br ${option.color} ${
+                        formData.preference === option.text 
+                          ? option.borderColor
+                          : 'border-muted hover:border-primary/50 hover:shadow-md'
+                      }`}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <option.icon className="w-6 h-6 text-primary" />
+                        <span className="text-sm sm:text-base text-body font-medium">{option.text}</span>
+                        {formData.preference === option.text && (
+                          <div className={`ml-auto w-5 h-5 ${option.checkColor} rounded-full flex items-center justify-center`}>
+                            <span className="text-white text-xs">✓</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   ))}
                 </div>
                 {errors.preference && <p className="text-red-500 text-xs">{errors.preference}</p>}
@@ -298,24 +374,68 @@ const ProfileOnboarding: React.FC<ProfileOnboardingProps> = ({ onComplete }) => 
             {/* Step 3: Ideal Person Style */}
             {currentStep === 3 && (
               <div className="space-y-4">
-                <h3 className="text-lg text-subheading text-center mb-4">Com qual perfil você mais se conecta?</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="text-center mb-6">
+                  <h3 className="text-lg text-subheading font-semibold mb-2">
+                    O tipo de mulher que mais bagunça tua cabeça é...
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Escolhe com calma...
+                  </p>
+                </div>
+                <div className="space-y-3">
                   {[
-                    { type: 'Tímida e carinhosa', icon: Heart, color: 'from-pink-500/20 to-pink-600/20' },
-                    { type: 'Misteriosa e provocante', icon: Star, color: 'from-gray-500/20 to-gray-600/20' },
-                    { type: 'Direta e segura', icon: Flame, color: 'from-red-500/20 to-red-600/20' },
-                    { type: 'Fofa e divertida', icon: Sparkles, color: 'from-purple-500/20 to-purple-600/20' }
+                    { 
+                      type: 'Discreta por fora… safada nas entrelinhas', 
+                      icon: Heart, 
+                      color: 'from-pink-500/20 to-pink-600/20',
+                      borderColor: 'border-pink-400 ring-2 ring-pink-400/50 shadow-lg shadow-pink-400/20',
+                      checkColor: 'bg-pink-400'
+                    },
+                    { 
+                      type: 'Segura, direta e zero paciência pra joguinho', 
+                      icon: Flame, 
+                      color: 'from-red-500/20 to-red-600/20',
+                      borderColor: 'border-red-400 ring-2 ring-red-400/50 shadow-lg shadow-red-400/20',
+                      checkColor: 'bg-red-400'
+                    },
+                    { 
+                      type: 'Cheia de mistérios e respostas que atiçam', 
+                      icon: Star, 
+                      color: 'from-gray-500/20 to-gray-600/20',
+                      borderColor: 'border-gray-400 ring-2 ring-gray-400/50 shadow-lg shadow-gray-400/20',
+                      checkColor: 'bg-gray-400'
+                    },
+                    { 
+                      type: 'Engraçada, leve e perigosamente envolvente', 
+                      icon: Sparkles, 
+                      color: 'from-purple-500/20 to-purple-600/20',
+                      borderColor: 'border-purple-400 ring-2 ring-purple-400/50 shadow-lg shadow-purple-400/20',
+                      checkColor: 'bg-purple-400'
+                    }
                   ].map((option) => (
                     <div
                       key={option.type}
-                      onClick={() => setFormData({ ...formData, idealType: option.type })}
+                      onClick={() => {
+                        setFormData({ ...formData, idealType: option.type });
+                        setButtonValidated(true);
+                        setTimeout(() => setButtonValidated(false), 1000);
+                      }}
                       className={`p-4 rounded-lg border-2 cursor-pointer transition-all bg-gradient-to-br ${option.color} ${
-                        formData.idealType === option.type ? 'border-primary ring-2 ring-primary/50' : 'border-muted hover:border-primary/50'
+                        formData.idealType === option.type ? option.borderColor : 'border-muted hover:border-primary/50 hover:shadow-md'
                       }`}
                     >
-                      <div className="text-center">
-                        <option.icon className="w-8 h-8 mx-auto mb-2 text-primary" />
-                        <p className="text-sm text-caption font-medium">{option.type}</p>
+                      <div className="flex items-center space-x-3">
+                        <div className={`w-8 h-8 rounded-full ${option.color} flex items-center justify-center`}>
+                          <option.icon className="w-4 h-4 text-primary" />
+                        </div>
+                        <span className="text-sm sm:text-base text-body font-medium flex-1">
+                          {option.type}
+                        </span>
+                        {formData.idealType === option.type && (
+                          <div className={`w-5 h-5 ${option.checkColor} rounded-full flex items-center justify-center`}>
+                            <span className="text-white text-xs">✓</span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -386,12 +506,16 @@ const ProfileOnboarding: React.FC<ProfileOnboardingProps> = ({ onComplete }) => 
             {/* Navigation Button */}
             <Button 
               onClick={handleNext}
-              className="w-full professional-button text-base sm:text-lg text-caption py-3 sm:py-4 min-h-[48px] touch-manipulation font-semibold"
+              className={`w-full professional-button text-base sm:text-lg text-caption py-3 sm:py-4 min-h-[48px] touch-manipulation font-semibold transition-all duration-300 ${
+                buttonValidated && currentStep === 3
+                  ? 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700'
+                  : 'bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70'
+              }`}
               size="lg"
             >
               {currentStep === 1 && 'Próximo'}
-              {currentStep === 2 && 'Avançar'}
-              {currentStep === 3 && 'Quase lá'}
+              {currentStep === 2 && '🔓 CONTINUAR AGORA'}
+              {currentStep === 3 && '🔓 CONTINUAR'}
               {currentStep === 4 && (
                 <>
                   <CheckSquare className="w-4 h-4 mr-2" />

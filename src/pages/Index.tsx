@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Heart, Users, Shield, Eye, Sparkles } from "lucide-react";
 import { ProfileCard } from "@/components/ProfileCard";
 import { LoadingScreen } from "@/components/LoadingScreen";
-import { MatchResult } from "@/components/MatchResult";
 import { Checkout } from "@/components/Checkout";
 import { PostPurchase } from "@/components/PostPurchase";
 import { useGeolocation, getFakeCityForProfile, getUserLocationData } from "@/hooks/useGeolocation";
@@ -140,7 +140,8 @@ const Index = () => {
 
   const handleOnboardingComplete = (profileData: any) => {
     setUserProfileData(profileData);
-    setCurrentStep('profiles');
+    // Ir para a tela de loading após o onboarding
+    setCurrentStep('loading');
   };
 
   const handleViewProfiles = () => {
@@ -149,7 +150,8 @@ const Index = () => {
   };
 
   const handleLoadingComplete = () => {
-    setCurrentStep('matches');
+    // Redirecionar para a página de curtir perfis
+    navigate('/curtir');
   };
 
   const handleUnlock = () => {
@@ -169,9 +171,7 @@ const Index = () => {
     return <LoadingScreen onComplete={handleLoadingComplete} />;
   }
 
-  if (currentStep === 'matches') {
-    return <MatchResult onUnlock={handleUnlock} />;
-  }
+  // Removido: if (currentStep === 'matches') { return <MatchResult onUnlock={handleUnlock} />; }
 
   if (currentStep === 'checkout') {
     return <Checkout onPurchase={handlePurchase} />;

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Clock, Gift, Shield, Star, Flame } from "lucide-react";
+import { CheckCircle, Clock, Gift, Shield, Star, Flame, MessageCircle, Brain, Bolt, Eye, Lock, Zap } from "lucide-react";
 
 interface CheckoutProps {
   onPurchase: (plan: string) => void;
@@ -18,7 +18,7 @@ interface Notification {
 
 export const Checkout = ({ onPurchase }: CheckoutProps) => {
   const navigate = useNavigate();
-  const [timeLeft, setTimeLeft] = useState(4 * 60 + 30); // 4:30 minutes in seconds
+  const [timeLeft, setTimeLeft] = useState(8 * 60); // 8:00 minutes in seconds
   const [notifications, setNotifications] = useState<Notification[]>([]);
   
   const maleNames = [
@@ -159,6 +159,14 @@ export const Checkout = ({ onPurchase }: CheckoutProps) => {
       <div className="container-mobile">
         {/* Header */}
         <div className="text-center mb-4 sm:mb-6 md:mb-8">
+          {/* Logo */}
+          <div className="mb-4 sm:mb-6">
+            <img 
+              src="https://i.postimg.cc/85LBXJdp/LOGO-PNG-MATCH-SECRETO.png" 
+              alt="Match Secreto Logo" 
+              className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mx-auto object-contain"
+            />
+          </div>
           <h1 className="text-fluid-2xl sm:text-fluid-3xl md:text-fluid-4xl font-bold gradient-text mb-3 sm:mb-4 leading-tight px-2 text-heading">
             Ela já se abriu... agora é tua vez de mostrar que veio.
           </h1>
@@ -179,44 +187,107 @@ export const Checkout = ({ onPurchase }: CheckoutProps) => {
           </div>
         </div>
 
-        {/* Bonus Section */}
-        <Card className="modern-card mb-4 sm:mb-6 md:mb-8 border-2 border-red-500/30 bg-gradient-to-br from-red-950/20 to-black/20">
-          <CardHeader className="text-center p-3 sm:p-4 md:p-6">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <span className="text-fluid-lg sm:text-fluid-xl md:text-fluid-2xl">💣</span>
-              <CardTitle className="text-fluid-base sm:text-fluid-lg md:text-fluid-xl font-bold gradient-text text-subheading">
-                BÔNUS: Método Rei do Match™
-              </CardTitle>
+        {/* Bonus Section - Redesigned */}
+        <div className="relative mb-4 sm:mb-6 md:mb-8 overflow-hidden">
+          {/* Animated Background */}
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 animate-pulse opacity-20 rounded-2xl"></div>
+          
+          <Card className="relative border-4 border-transparent bg-gradient-to-br from-purple-900/40 via-pink-900/40 to-red-900/40 backdrop-blur-sm rounded-2xl shadow-2xl">
+            {/* Glowing border effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 rounded-2xl opacity-75 blur-sm"></div>
+            <div className="absolute inset-[2px] bg-black/90 rounded-2xl"></div>
+            
+            <div className="relative z-10">
+              <CardHeader className="text-center p-4 sm:p-6 md:p-8">
+                {/* Title with enhanced styling */}
+                <div className="mb-6">
+                  <div className="text-xs sm:text-sm font-bold text-yellow-400 mb-2 tracking-widest uppercase">
+                    BÔNUS EXCLUSIVO
+                  </div>
+                  <CardTitle className="text-2xl sm:text-3xl md:text-4xl font-black bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent mb-2">
+                    MÉTODO REI DO MATCH™
+                  </CardTitle>
+                  <div className="h-1 w-32 bg-gradient-to-r from-purple-500 to-pink-500 mx-auto rounded-full mb-4"></div>
+                </div>
+                
+                {/* Subtitle with glow effect */}
+                <p className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-6 drop-shadow-lg">
+                  <span className="bg-gradient-to-r from-pink-400 to-red-400 bg-clip-text text-transparent">
+                    O pacote secreto que transforma
+                  </span>
+                  <br />
+                  <span className="text-yellow-400 animate-pulse">
+                    conversa fiada em nude enviado!
+                  </span>
+                </p>
+                
+                {/* Mockup Image - Original size, responsive */}
+                <div className="mb-6">
+                  <img 
+                    src="https://i.postimg.cc/8cMkxvtC/MOCKUP-REI-DO-MATCH.png" 
+                    alt="Mockup Rei do Match" 
+                    className="w-full h-auto max-w-full object-contain" 
+                  />
+                </div>
+              </CardHeader>
+              
+              <CardContent className="p-4 sm:p-6 md:p-8">
+                {/* Features with professional icons */}
+                <div className="grid gap-4 mb-6">
+                  <div className="flex items-start gap-4 p-3 bg-black rounded-lg border border-red-500">
+                    <div className="bg-red-500 p-2 rounded-full shadow-lg">
+                      <MessageCircle className="w-5 h-5 text-white" />
+                    </div>
+                    <span className="font-semibold text-white text-sm sm:text-base">
+                      100 mensagens que acendem ela no papo e molham no privado
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-start gap-4 p-3 bg-black rounded-lg border border-red-500">
+                    <div className="bg-red-500 p-2 rounded-full shadow-lg">
+                      <Brain className="w-5 h-5 text-white" />
+                    </div>
+                    <span className="font-semibold text-white text-sm sm:text-base">
+                      Como prender atenção sem ter beleza, dinheiro ou perfil top
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-start gap-4 p-3 bg-black rounded-lg border border-red-500">
+                    <div className="bg-red-500 p-2 rounded-full shadow-lg">
+                      <Bolt className="w-5 h-5 text-white" />
+                    </div>
+                    <span className="font-semibold text-white text-sm sm:text-base">
+                      Frases que forçam resposta em menos de 1 minuto
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-start gap-4 p-3 bg-black rounded-lg border border-red-500">
+                    <div className="bg-red-500 p-2 rounded-full shadow-lg">
+                      <Eye className="w-5 h-5 text-white" />
+                    </div>
+                    <span className="font-semibold text-white text-sm sm:text-base">
+                      Estratégia ninja pra sair do chat direto pro motel
+                    </span>
+                  </div>
+                </div>
+                
+                {/* Call to action with enhanced styling */}
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-xl blur-lg opacity-30 animate-pulse"></div>
+                  <div className="relative bg-gradient-to-r from-yellow-500 to-orange-600 p-4 rounded-xl border-2 border-yellow-400/50 shadow-2xl">
+                    <div className="flex items-center justify-center gap-3 text-black font-black text-sm sm:text-base">
+                      <Lock className="w-6 h-6 animate-bounce" />
+                      <span className="uppercase tracking-wide">
+                        Liberado automaticamente após qualquer plano
+                      </span>
+                      <Zap className="w-6 h-6 animate-bounce" />
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
             </div>
-            <p className="text-fluid-sm sm:text-fluid-base md:text-fluid-lg font-semibold text-red-400 mt-2">
-              O pacote secreto que transforma conversa fiada em nude enviado.
-            </p>
-          </CardHeader>
-          <CardContent className="p-3 sm:p-4 md:p-6">
-            <div className="grid gap-2 sm:gap-3 text-fluid-xs sm:text-fluid-sm md:text-fluid-base">
-              <div className="flex items-start gap-2 sm:gap-3">
-                <span className="text-green-400 font-bold text-fluid-base sm:text-fluid-lg">✅</span>
-                <span className="font-medium">100 mensagens que acendem ela no papo e molham no privado</span>
-              </div>
-              <div className="flex items-start gap-2 sm:gap-3">
-                <span className="text-green-400 font-bold text-fluid-base sm:text-fluid-lg">✅</span>
-                <span className="font-medium">Como prender atenção sem ter beleza, dinheiro ou perfil top</span>
-              </div>
-              <div className="flex items-start gap-2 sm:gap-3">
-                <span className="text-green-400 font-bold text-fluid-base sm:text-fluid-lg">✅</span>
-                <span className="font-medium">Frases que forçam resposta em menos de 1 minuto</span>
-              </div>
-              <div className="flex items-start gap-2 sm:gap-3">
-                <span className="text-green-400 font-bold text-fluid-base sm:text-fluid-lg">✅</span>
-                <span className="font-medium">Estratégia ninja pra sair do chat direto pro motel</span>
-              </div>
-            </div>
-            <div className="flex items-center justify-center gap-2 text-fluid-xs sm:text-fluid-sm text-yellow-400 mt-3 sm:mt-4 font-semibold bg-black/30 rounded-lg p-2 sm:p-3">
-              <span className="text-fluid-base sm:text-fluid-lg">🔐</span>
-              <span>Liberado automaticamente após qualquer plano</span>
-            </div>
-          </CardContent>
-        </Card>
+          </Card>
+        </div>
 
         {/* Plans */}
         <div className="flex flex-col sm:flex-row justify-center items-stretch gap-4 sm:gap-6 max-w-4xl mx-auto">
@@ -258,7 +329,7 @@ export const Checkout = ({ onPurchase }: CheckoutProps) => {
                   <ul className="space-y-2 sm:space-y-3 mb-4 sm:mb-6">
                     {plan.features.map((feature, index) => (
                       <li key={index} className="flex items-center gap-2 text-fluid-sm sm:text-fluid-base text-body">
-                        <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-400 flex-shrink-0" />
+                        <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 text-green-500" />
                         <span className="text-left">{feature}</span>
                       </li>
                     ))}

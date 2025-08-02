@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import ProfileOnboarding from "@/components/ProfileOnboarding";
@@ -6,6 +7,7 @@ import { Eye, Users, Heart } from "lucide-react";
 
 export const MatchSecreto = () => {
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const navigate = useNavigate();
 
   const handleStartProfile = () => {
     setShowOnboarding(true);
@@ -13,8 +15,8 @@ export const MatchSecreto = () => {
 
   const handleProfileComplete = (profileData: any) => {
     console.log('Perfil criado:', profileData);
-    // Redirecionar para a página de curtir perfis
-    window.location.href = '/curtir';
+    // Redirecionar diretamente para a página de curtir perfis
+    navigate('/curtir');
   };
 
   if (showOnboarding) {
