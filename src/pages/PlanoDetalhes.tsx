@@ -12,7 +12,7 @@ const PlanoDetalhes: React.FC = () => {
   const planConfig = {
     'espiadinha': {
       name: 'Espiadinha Básica',
-      price: 'R$ 19,90',
+      price: 'R$ 9,90',
       description: 'Acesso básico aos matches',
       features: [
         'Ver quem te curtiu',
@@ -24,7 +24,7 @@ const PlanoDetalhes: React.FC = () => {
     },
     'conversaquente': {
       name: 'Conversa Quente + Galeria',
-      price: 'R$ 39,90',
+      price: 'R$ 29,90',
       description: 'Acesso completo + galeria',
       features: [
         'Tudo do plano anterior',
@@ -37,7 +37,7 @@ const PlanoDetalhes: React.FC = () => {
     },
     'vipzao': {
       name: 'Acesso Total VIP',
-      price: 'R$ 59,90',
+      price: 'R$ 49,90',
       description: 'Experiência premium completa',
       features: [
         'Tudo dos planos anteriores',

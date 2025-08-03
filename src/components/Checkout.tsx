@@ -116,7 +116,7 @@ export const Checkout = ({ onPurchase }: CheckoutProps) => {
     {
       id: "espiadinha",
       name: "Espiadinha Básica",
-      price: "R$ 19,90",
+      price: "R$ 9,90",
       description: "Acesso básico aos matches",
       features: [
         "Ver quem te curtiu",
@@ -128,7 +128,7 @@ export const Checkout = ({ onPurchase }: CheckoutProps) => {
     {
       id: "conversaquente",
       name: "Conversa Quente + Galeria",
-      price: "R$ 39,90",
+      price: "R$ 29,90",
       description: "Acesso completo + galeria",
       features: [
         "Tudo do plano anterior",
@@ -142,7 +142,7 @@ export const Checkout = ({ onPurchase }: CheckoutProps) => {
     {
       id: "vipzao",
       name: "Acesso Total VIP",
-      price: "R$ 59,90",
+      price: "R$ 49,90",
       description: "Experiência premium completa",
       features: [
         "Tudo dos planos anteriores",
