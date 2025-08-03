@@ -121,13 +121,13 @@ const PlanoDetalhes: React.FC = () => {
           <CardContent className="p-4 sm:p-6 lg:p-8">
             <div className="space-y-6 mb-8">
               <div className="flex items-center justify-center gap-2 mb-4 sm:mb-6">
-                 <ChevronDown className="w-5 h-5 sm:w-6 sm:h-6 text-red-400 fill-red-400" />
+                 <ChevronDown className="w-5 h-5 sm:w-6 sm:h-6 text-red-400" />
                  <h3 className="text-lg sm:text-xl font-bold text-white">O que está incluído:</h3>
                </div>
               <ul className="space-y-3 sm:space-y-4">
                 {currentPlan.features.map((feature, index) => (
                   <li key={index} className="flex items-center gap-3 sm:gap-4 text-gray-200 bg-gray-800/30 p-3 rounded-lg border border-gray-700/30">
-                    <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-red-400 fill-red-400 flex-shrink-0 drop-shadow-sm" />
+                    <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-red-400 flex-shrink-0 drop-shadow-sm" />
                     <span className="text-sm sm:text-base font-medium">{feature}</span>
                   </li>
                 ))}
@@ -136,20 +136,20 @@ const PlanoDetalhes: React.FC = () => {
 
             <div className="bg-gradient-to-r from-red-500/20 to-red-600/20 border border-red-500/40 rounded-xl p-4 sm:p-5 mb-8 backdrop-blur-sm">
               <div className="flex items-center gap-2 sm:gap-3 text-red-300 text-sm sm:text-base font-bold mb-3">
-                <Clock className="w-4 h-4 sm:w-5 sm:h-5 animate-pulse fill-red-400" />
+                <Clock className="w-4 h-4 sm:w-5 sm:h-5 animate-pulse text-red-400" />
                 <span className="text-center sm:text-left">Redirecionamento automático em 10 segundos...</span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 text-gray-300 text-xs sm:text-sm">
                  <div className="flex items-center justify-center sm:justify-start gap-2 bg-gray-800/40 p-2 rounded-lg">
-                   <Shield className="w-4 h-4 fill-red-400 text-red-400" />
+                   <Shield className="w-4 h-4 text-red-400" />
                    <span>Acesso sigiloso</span>
                  </div>
                  <div className="flex items-center justify-center sm:justify-start gap-2 bg-gray-800/40 p-2 rounded-lg">
-                   <CreditCard className="w-4 h-4 fill-red-400 text-red-400" />
+                   <CreditCard className="w-4 h-4 text-red-400" />
                    <span>Cobrança discreta</span>
                  </div>
                  <div className="flex items-center justify-center sm:justify-start gap-2 bg-gray-800/40 p-2 rounded-lg">
-                   <Eye className="w-4 h-4 fill-red-400 text-red-400" />
+                   <Eye className="w-4 h-4 text-red-400" />
                    <span>Visualização imediata</span>
                  </div>
                </div>
@@ -162,7 +162,7 @@ const PlanoDetalhes: React.FC = () => {
                 size="lg"
               >
                 DESBLOQUEAR AGORA
-                <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 ml-2 sm:ml-3 fill-white" />
+                <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 ml-2 sm:ml-3 text-white" />
               </Button>
               
               <Button 
