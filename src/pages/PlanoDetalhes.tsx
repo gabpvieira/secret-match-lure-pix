@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
-import { CheckCircle, ArrowRight, Clock, ChevronDown, Lock, CreditCard, Zap } from 'lucide-react';
+import { CheckCircle, ArrowRight, Clock, ChevronDown, Lock, CreditCard, Zap, Shield, Eye } from 'lucide-react';
 
 const PlanoDetalhes: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -101,55 +101,55 @@ const PlanoDetalhes: React.FC = () => {
       
       <div className="w-full max-w-2xl relative z-10">
         <Card className="bg-gray-900/80 backdrop-blur-xl border border-gray-700/50 shadow-2xl shadow-black/50">
-          <CardHeader className="text-center p-8 bg-gradient-to-b from-gray-800/50 to-transparent">
-            <div className={`w-24 h-24 mx-auto rounded-full bg-gradient-to-r ${currentPlan.color} flex items-center justify-center mb-6 overflow-hidden shadow-lg shadow-black/30 ring-2 ring-white/10`}>
+          <CardHeader className="text-center p-4 sm:p-6 lg:p-8 bg-gradient-to-b from-gray-800/50 to-transparent">
+            <div className={`w-20 h-20 sm:w-24 sm:h-24 mx-auto rounded-full bg-gradient-to-r ${currentPlan.color} flex items-center justify-center mb-4 sm:mb-6 overflow-hidden shadow-lg shadow-black/30 ring-2 ring-red-400/30`}>
               <img 
                 src="https://i.postimg.cc/KvHHkWNt/LOGO-MATCH-SCRETO-ORIGINAL.png" 
                 alt="Match Secreto" 
                 className="w-full h-full object-cover" 
               />
             </div>
-            <CardTitle className="text-3xl sm:text-4xl gradient-text mb-3 font-bold">
+            <CardTitle className="text-2xl sm:text-3xl lg:text-4xl gradient-text mb-2 sm:mb-3 font-bold">
               {currentPlan.name}
             </CardTitle>
-            <div className="text-4xl sm:text-5xl font-bold text-white mb-3 drop-shadow-lg">
+            <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-red-400 mb-2 sm:mb-3 drop-shadow-lg">
               {currentPlan.price}
             </div>
-            <p className="text-gray-300 text-lg">{currentPlan.description}</p>
+            <p className="text-gray-300 text-base sm:text-lg">{currentPlan.description}</p>
           </CardHeader>
           
-          <CardContent className="p-8">
+          <CardContent className="p-4 sm:p-6 lg:p-8">
             <div className="space-y-6 mb-8">
-              <div className="flex items-center justify-center gap-2 mb-6">
-                 <ChevronDown className="w-6 h-6 text-white" />
-                 <h3 className="text-xl font-bold text-white">O que está incluído:</h3>
+              <div className="flex items-center justify-center gap-2 mb-4 sm:mb-6">
+                 <ChevronDown className="w-5 h-5 sm:w-6 sm:h-6 text-red-400 fill-red-400" />
+                 <h3 className="text-lg sm:text-xl font-bold text-white">O que está incluído:</h3>
                </div>
-              <ul className="space-y-4">
+              <ul className="space-y-3 sm:space-y-4">
                 {currentPlan.features.map((feature, index) => (
-                  <li key={index} className="flex items-center gap-4 text-gray-200 bg-gray-800/30 p-3 rounded-lg border border-gray-700/30">
-                    <CheckCircle className="w-6 h-6 text-green-400 flex-shrink-0 drop-shadow-sm" />
-                    <span className="text-base font-medium">{feature}</span>
+                  <li key={index} className="flex items-center gap-3 sm:gap-4 text-gray-200 bg-gray-800/30 p-3 rounded-lg border border-gray-700/30">
+                    <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-red-400 fill-red-400 flex-shrink-0 drop-shadow-sm" />
+                    <span className="text-sm sm:text-base font-medium">{feature}</span>
                   </li>
                 ))}
               </ul>
             </div>
 
-            <div className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 rounded-xl p-5 mb-8 backdrop-blur-sm">
-              <div className="flex items-center gap-3 text-yellow-300 text-base font-bold mb-2">
-                <Clock className="w-5 h-5 animate-pulse" />
-                <span>Redirecionamento automático em 10 segundos...</span>
+            <div className="bg-gradient-to-r from-red-500/20 to-red-600/20 border border-red-500/40 rounded-xl p-4 sm:p-5 mb-8 backdrop-blur-sm">
+              <div className="flex items-center gap-2 sm:gap-3 text-red-300 text-sm sm:text-base font-bold mb-3">
+                <Clock className="w-4 h-4 sm:w-5 sm:h-5 animate-pulse fill-red-400" />
+                <span className="text-center sm:text-left">Redirecionamento automático em 10 segundos...</span>
               </div>
-              <div className="flex items-center justify-center gap-4 text-gray-400 text-sm">
-                 <div className="flex items-center gap-1">
-                   <Lock className="w-4 h-4" />
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 text-gray-300 text-xs sm:text-sm">
+                 <div className="flex items-center justify-center sm:justify-start gap-2 bg-gray-800/40 p-2 rounded-lg">
+                   <Shield className="w-4 h-4 fill-red-400 text-red-400" />
                    <span>Acesso sigiloso</span>
                  </div>
-                 <div className="flex items-center gap-1">
-                   <CreditCard className="w-4 h-4" />
+                 <div className="flex items-center justify-center sm:justify-start gap-2 bg-gray-800/40 p-2 rounded-lg">
+                   <CreditCard className="w-4 h-4 fill-red-400 text-red-400" />
                    <span>Cobrança discreta</span>
                  </div>
-                 <div className="flex items-center gap-1">
-                   <Zap className="w-4 h-4" />
+                 <div className="flex items-center justify-center sm:justify-start gap-2 bg-gray-800/40 p-2 rounded-lg">
+                   <Eye className="w-4 h-4 fill-red-400 text-red-400" />
                    <span>Visualização imediata</span>
                  </div>
                </div>
@@ -158,17 +158,17 @@ const PlanoDetalhes: React.FC = () => {
             <div className="space-y-4">
               <Button 
                 onClick={handleProceedToCheckout}
-                className="w-full bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white text-xl py-6 font-bold rounded-xl shadow-lg shadow-red-500/25 hover:shadow-red-500/40 transition-all duration-300 hover:scale-105"
+                className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white text-lg sm:text-xl py-4 sm:py-6 font-bold rounded-xl shadow-lg shadow-red-500/25 hover:shadow-red-500/40 transition-all duration-300 hover:scale-105"
                 size="lg"
               >
                 DESBLOQUEAR AGORA
-                <ArrowRight className="w-6 h-6 ml-3" />
+                <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 ml-2 sm:ml-3 fill-white" />
               </Button>
               
               <Button 
                 onClick={handleGoBack}
                 variant="outline"
-                className="w-full border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white py-4 rounded-xl transition-all duration-300"
+                className="w-full border-red-600/50 text-red-300 hover:bg-red-900/20 hover:text-red-200 hover:border-red-500 py-3 sm:py-4 rounded-xl transition-all duration-300"
               >
                 Voltar aos Planos
               </Button>
