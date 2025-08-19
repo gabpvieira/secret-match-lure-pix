@@ -28,6 +28,7 @@
   ],
   "env": {
     "NODE_ENV": "production",
-    "PUSHINPAY_ENVIRONMENT": "production"
+    "PUSHINPAY_ENVIRONMENT": "production",
+    "PUSHINPAY_BASE_URL": "https://api.pushinpay.com.br"
   }
 }
