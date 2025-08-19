@@ -23,7 +23,7 @@ const Index = () => {
             </Badge>
             
             <h1 className="text-fluid-3xl sm:text-fluid-4xl md:text-fluid-5xl text-heading gradient-text mb-3 sm:mb-4 md:mb-6 leading-tight px-2 flex items-center justify-center flex-wrap gap-2">
-              3 mulheres viram seu perfil… e uma já mandou algo que você vai querer ver
+              Comece sua experiência e veja quem pode ser o seu próximo match.
               <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 text-accent animate-pulse flex-shrink-0" />
             </h1>
             
