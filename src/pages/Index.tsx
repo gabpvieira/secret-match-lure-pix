@@ -1,23 +1,24 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Heart, Users, Shield, Eye, Sparkles } from "lucide-react";
-import { ProfileCard } from "@/components/ProfileCard";
+import { MapPin, Heart, Users, Shield, Eye, Sparkles, CheckCircle, XCircle } from "lucide-react";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { Checkout } from "@/components/Checkout";
 import { PostPurchase } from "@/components/PostPurchase";
 import { useGeolocation, getFakeCityForProfile, getUserLocationData } from "@/hooks/useGeolocation";
 import { SwipeProfileCard } from "@/components/SwipeProfileCard";
 import ProfileOnboarding from "@/components/ProfileOnboarding";
+import { MatchResult } from "@/components/MatchResult";
+import PlanCheckout from "@/components/PlanCheckout";
 
-type Step = 'onboarding' | 'landing' | 'profiles' | 'loading' | 'matches' | 'checkout' | 'success';
+type Step = 'ambiente-seguro' | 'onboarding' | 'landing' | 'profiles' | 'loading' | 'matches' | 'checkout' | 'success' | 'plan-details';
 
 const Index = () => {
-  const [currentStep, setCurrentStep] = useState<Step>('onboarding');
+  const [currentStep, setCurrentStep] = useState<Step>('ambiente-seguro');
   const [likedProfiles, setLikedProfiles] = useState<Set<number>>(new Set());
   const [selectedPlan, setSelectedPlan] = useState<string>('');
+  const [selectedPlanId, setSelectedPlanId] = useState<string>('');
   const [currentProfileIndex, setCurrentProfileIndex] = useState(0);
   const [userProfileData, setUserProfileData] = useState<any>(null);
   const [profiles, setProfiles] = useState<any[]>([]);
@@ -150,8 +151,7 @@ const Index = () => {
   };
 
   const handleLoadingComplete = () => {
-    // Redirecionar para a página de curtir perfis
-    navigate('/curtir');
+    setCurrentStep('matches');
   };
 
   const handleUnlock = () => {
@@ -163,6 +163,53 @@ const Index = () => {
     setCurrentStep('success');
   };
 
+  const handleSelectPlan = (planId: string) => {
+    setSelectedPlanId(planId);
+    setCurrentStep('plan-details');
+  };
+
+  const handleBackToLanding = () => {
+    setCurrentStep('landing');
+  };
+
+  const handleBackToMatches = () => {
+    setCurrentStep('matches');
+  };
+
+  const handleContinueFromAmbiente = () => {
+    setCurrentStep('onboarding');
+  };
+
+  if (currentStep === 'ambiente-seguro') {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center px-4">
+        <Card className="modern-card w-full max-w-lg">
+          <CardContent className="p-8 text-center">
+            <div className="mb-6">
+              <Shield className="w-16 h-16 mx-auto text-green-400 mb-4" />
+            </div>
+            
+            <h1 className="text-2xl sm:text-3xl font-bold text-heading mb-6 leading-tight">
+              Você está entrando numa área segura e privada 🔒
+            </h1>
+            
+            <p className="text-lg text-body text-muted-foreground mb-8">
+              Clique abaixo para continuar. Suas preferências serão mantidas com sigilo total.
+            </p>
+            
+            <Button 
+              onClick={handleContinueFromAmbiente}
+              className="w-full professional-button text-lg py-6 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600"
+              size="lg"
+            >
+              Tudo Certo, Quero Continuar
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   if (currentStep === 'onboarding') {
     return <ProfileOnboarding onComplete={handleOnboardingComplete} />;
   }
@@ -171,14 +218,20 @@ const Index = () => {
     return <LoadingScreen onComplete={handleLoadingComplete} />;
   }
 
-  // Removido: if (currentStep === 'matches') { return <MatchResult onUnlock={handleUnlock} />; }
+  if (currentStep === 'matches') {
+    return <MatchResult onUnlock={handleUnlock} />;
+  }
 
   if (currentStep === 'checkout') {
-    return <Checkout onPurchase={handlePurchase} />;
+    return <Checkout onPurchase={handlePurchase} onSelectPlan={handleSelectPlan} />;
   }
 
   if (currentStep === 'success') {
     return <PostPurchase plan={selectedPlan} />;
+  }
+
+  if (currentStep === 'plan-details') {
+    return <PlanCheckout planId={selectedPlanId} onBack={handleBackToLanding} />;
   }
 
   if (currentStep === 'profiles') {

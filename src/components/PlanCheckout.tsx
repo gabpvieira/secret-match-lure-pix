@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,9 +16,12 @@ interface PlanConfig {
   color: string;
 }
 
-const PlanCheckout: React.FC = () => {
-  const { planId } = useParams<{ planId: string }>();
-  const navigate = useNavigate();
+interface PlanCheckoutProps {
+  planId: string;
+  onBack?: () => void;
+}
+
+const PlanCheckout: React.FC<PlanCheckoutProps> = ({ planId, onBack }) => {
   const { toast } = useToast();
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -84,7 +86,9 @@ const PlanCheckout: React.FC = () => {
   const currentPlan = planId ? planConfig[planId] : null;
 
   const handleGoBack = () => {
-    navigate('/checkout');
+    if (onBack) {
+      onBack();
+    }
   };
 
   const handleCopyPixCode = async () => {

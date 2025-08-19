@@ -7,6 +7,7 @@ import { CheckCircle, Clock, Gift, Shield, Star, Flame, MessageCircle, Brain, Bo
 
 interface CheckoutProps {
   onPurchase: (plan: string) => void;
+  onSelectPlan?: (planId: string) => void;
 }
 
 interface Notification {
@@ -16,8 +17,7 @@ interface Notification {
   timestamp: number;
 }
 
-export const Checkout = ({ onPurchase }: CheckoutProps) => {
-  const navigate = useNavigate();
+export const Checkout = ({ onPurchase, onSelectPlan }: CheckoutProps) => {
   const [timeLeft, setTimeLeft] = useState(8 * 60); // 8:00 minutes in seconds
   const [notifications, setNotifications] = useState<Notification[]>([]);
   
@@ -106,8 +106,9 @@ export const Checkout = ({ onPurchase }: CheckoutProps) => {
   };
 
   const handlePurchase = (planId: string) => {
-    // Redirecionar para a página específica do plano
-    navigate(`/checkout/${planId}`);
+    if (onSelectPlan) {
+      onSelectPlan(planId);
+    }
   };
 
 
