@@ -1,0 +1,42 @@
+{
+  "plans": [
+    {
+      "id": "basic_monthly",
+      "name": "Básico Mensal",
+      "amount": 1990,
+      "description": "Acesso básico por 30 dias",
+      "features": [
+        "Matches ilimitados",
+        "Suporte básico",
+        "Acesso mobile"
+      ]
+    },
+    {
+      "id": "pro_monthly",
+      "name": "Pro Mensal",
+      "amount": 4990,
+      "description": "Acesso premium por 30 dias",
+      "features": [
+        "Matches ilimitados",
+        "Super likes",
+        "Boost de perfil",
+        "Suporte prioritário",
+        "Acesso mobile e web"
+      ]
+    },
+    {
+      "id": "lifetime",
+      "name": "Acesso Vitalício",
+      "amount": 14900,
+      "description": "Acesso completo para sempre",
+      "features": [
+        "Matches ilimitados",
+        "Super likes ilimitados",
+        "Boost diário",
+        "Suporte VIP",
+        "Acesso a todas as funcionalidades",
+        "Sem renovação"
+      ]
+    }
+  ]
+}

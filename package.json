@@ -7,8 +7,13 @@
     "dev": "vite",
     "build": "vite build",
     "build:dev": "vite build --mode development",
+    "build:prod": "vite build --mode production",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "npm run build && npm run preview",
+    "deploy": "npm run build && vercel --prod",
+    "backend:dev": "cd backend && npm start",
+    "backend:prod": "cd backend && NODE_ENV=production npm start"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

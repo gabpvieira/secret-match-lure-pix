@@ -3,7 +3,7 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Progress } from './ui/progress';
-import { Upload, MapPin, Heart, Sparkles, Camera, MessageCircle, Users, Flame, Star, Zap, CheckSquare } from 'lucide-react';
+import { Upload, MapPin, Heart, Sparkles, Camera, MessageCircle, Users, Flame, Star, Zap, CheckSquare, ChevronRight, Shield, TrendingUp } from 'lucide-react';
 import { useGeolocation } from '../hooks/useGeolocation';
 
 interface ProfileData {
@@ -339,6 +339,9 @@ const ProfileOnboarding: React.FC<ProfileOnboardingProps> = ({ onComplete }) => 
                 <h3 className="text-lg text-subheading text-center mb-4 font-semibold">
                   O que você REALMENTE procura aqui?
                 </h3>
+                <p className="text-sm text-muted-foreground text-center mb-4">
+                  Selecione uma opção para continuar
+                </p>
                 <div className="space-y-3">
                   {[
                     { text: 'Papo bom que rende coisa melhor...', icon: MessageCircle, color: 'from-blue-500/20 to-blue-600/20', borderColor: 'border-cyan-400 ring-2 ring-cyan-400/50 shadow-lg shadow-cyan-400/20', checkColor: 'bg-cyan-400', textColor: 'text-cyan-300' },
@@ -357,11 +360,13 @@ const ProfileOnboarding: React.FC<ProfileOnboardingProps> = ({ onComplete }) => 
                     >
                       <div className="flex items-center space-x-3">
                         <option.icon className="w-6 h-6 text-primary" />
-                        <span className="text-sm sm:text-base text-body font-medium">{option.text}</span>
-                        {formData.preference === option.text && (
-                          <div className={`ml-auto w-5 h-5 ${option.checkColor} rounded-full flex items-center justify-center`}>
+                        <span className="text-sm sm:text-base text-body font-medium flex-1">{option.text}</span>
+                        {formData.preference === option.text ? (
+                          <div className={`w-5 h-5 ${option.checkColor} rounded-full flex items-center justify-center`}>
                             <span className="text-white text-xs">✓</span>
                           </div>
+                        ) : (
+                          <ChevronRight className="w-4 h-4 text-muted-foreground opacity-60" />
                         )}
                       </div>
                     </div>
@@ -378,8 +383,11 @@ const ProfileOnboarding: React.FC<ProfileOnboardingProps> = ({ onComplete }) => 
                   <h3 className="text-lg text-subheading font-semibold mb-2">
                     O tipo de mulher que mais bagunça tua cabeça é...
                   </h3>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-muted-foreground mb-2">
                     Escolhe com calma...
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Selecione uma opção para continuar
                   </p>
                 </div>
                 <div className="space-y-3">
@@ -431,10 +439,12 @@ const ProfileOnboarding: React.FC<ProfileOnboardingProps> = ({ onComplete }) => 
                         <span className="text-sm sm:text-base text-body font-medium flex-1">
                           {option.type}
                         </span>
-                        {formData.idealType === option.type && (
+                        {formData.idealType === option.type ? (
                           <div className={`w-5 h-5 ${option.checkColor} rounded-full flex items-center justify-center`}>
                             <span className="text-white text-xs">✓</span>
                           </div>
+                        ) : (
+                          <ChevronRight className="w-4 h-4 text-muted-foreground opacity-60" />
                         )}
                       </div>
                     </div>
@@ -446,39 +456,60 @@ const ProfileOnboarding: React.FC<ProfileOnboardingProps> = ({ onComplete }) => 
 
             {/* Step 4: Profile Photo */}
             {currentStep === 4 && (
-              <div className="space-y-4">
-                <h3 className="text-lg text-subheading text-center mb-4">Adicione uma foto sua para liberar o acesso completo.</h3>
+              <div className="space-y-6">
+                <div className="text-center space-y-2">
+                  <h3 className="text-xl text-subheading font-bold mb-2">
+                    Selecione sua foto
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Adicione uma foto sua para liberar o acesso completo.
+                  </p>
+                </div>
                 
-                <div className="border-2 border-dashed border-muted rounded-lg p-6 text-center">
+                {/* Upload Area */}
+                <div className="bg-gradient-to-br from-background to-muted/30 border-2 border-dashed border-primary/30 rounded-xl p-8 text-center hover:border-primary/50 transition-colors">
                   {uploadingPhoto ? (
                     <div className="space-y-4">
-                      <div className="w-12 h-12 mx-auto border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-                      <p className="text-sm text-muted-foreground">Fazendo upload da foto...</p>
+                      <div className="w-16 h-16 mx-auto border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                      <div className="space-y-1">
+                        <p className="text-base font-medium text-body">Processando sua foto...</p>
+                        <p className="text-sm text-muted-foreground">Aguarde um momento</p>
+                      </div>
                     </div>
                   ) : photoPreview ? (
-                    <div className="space-y-4">
-                      <img src={photoPreview} alt="Preview" className="w-32 h-32 mx-auto rounded-full object-cover" />
+                    <div className="space-y-6">
+                      <div className="relative inline-block">
+                        <img src={photoPreview} alt="Preview" className="w-40 h-40 mx-auto rounded-full object-cover border-4 border-primary/20 shadow-lg" />
+                        <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center border-2 border-background">
+                          <CheckSquare className="w-4 h-4 text-white" />
+                        </div>
+                      </div>
                       <Button 
                         variant="outline" 
                         onClick={() => document.getElementById('photo-upload')?.click()}
                         disabled={uploadingPhoto}
+                        className="bg-background/50 hover:bg-background border-primary/30 hover:border-primary/50"
                       >
                         <Camera className="w-4 h-4 mr-2" />
                         Trocar Foto
                       </Button>
                     </div>
                   ) : (
-                    <div className="space-y-4">
-                      <Upload className="w-12 h-12 mx-auto text-muted-foreground" />
-                      <div>
+                    <div className="space-y-6">
+                      <div className="w-20 h-20 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
+                        <Upload className="w-10 h-10 text-primary" />
+                      </div>
+                      <div className="space-y-3">
                         <Button 
                           onClick={() => document.getElementById('photo-upload')?.click()}
                           disabled={uploadingPhoto}
+                          className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white font-semibold px-8 py-3"
+                          size="lg"
                         >
-                          <Camera className="w-4 h-4 mr-2" />
+                          <Camera className="w-5 h-5 mr-2" />
                           Escolher Foto
                         </Button>
-                        <p className="text-xs text-body text-muted-foreground mt-2">JPG, PNG até 5MB</p>
+                        <p className="text-sm text-muted-foreground">JPG, PNG até 5MB</p>
                       </div>
                     </div>
                   )}
@@ -492,14 +523,35 @@ const ProfileOnboarding: React.FC<ProfileOnboardingProps> = ({ onComplete }) => 
                   />
                 </div>
                 
-                <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4">
-                  <p className="text-sm sm:text-base text-green-400 text-center flex items-center justify-center gap-2 font-semibold">
-                    <Zap className="w-5 h-5" />
-                    Perfis com foto têm até 7x mais chances de serem selecionados
-                  </p>
+                {/* Professional Stats Box */}
+                <div className="bg-gradient-to-r from-green-500/10 via-emerald-500/10 to-teal-500/10 border border-green-500/30 rounded-xl p-6 shadow-lg">
+                  <div className="flex items-start space-x-4">
+                    <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                      <TrendingUp className="w-6 h-6 text-green-400" />
+                    </div>
+                    <div className="flex-1 space-y-2">
+                      <h4 className="text-base font-bold text-green-400">
+                        Perfis com foto têm até 7x mais chances de serem selecionados
+                      </h4>
+                      <div className="flex items-center space-x-4 text-sm text-green-300/80">
+                        <div className="flex items-center space-x-1">
+                          <Shield className="w-4 h-4" />
+                          <span>100% Seguro</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <Zap className="w-4 h-4" />
+                          <span>Verificação Automática</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 
-                {errors.photo && <p className="text-red-500 text-xs text-center">{errors.photo}</p>}
+                {errors.photo && (
+                  <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3">
+                    <p className="text-red-400 text-sm text-center font-medium">{errors.photo}</p>
+                  </div>
+                )}
               </div>
             )}
 

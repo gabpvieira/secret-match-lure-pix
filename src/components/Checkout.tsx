@@ -106,11 +106,11 @@ export const Checkout = ({ onPurchase }: CheckoutProps) => {
   };
 
   const handlePurchase = (planId: string) => {
-    onPurchase(planId);
-    
-    // Redirecionar primeiro para página com slug do plano
-    navigate(`/plano/${planId}`);
+    // Redirecionar para a página específica do plano
+    navigate(`/checkout/${planId}`);
   };
+
+
 
   const plans = [
     {

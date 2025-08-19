@@ -1,0 +1,325 @@
+Implementar, ponta a ponta, a criação de uma cobrança PIX na PushinPay a partir de (1) e-mail do comprador e (2) identificador do plano (pré-cadastrado localmente com seu valor). O agente deve retornar ao front-end os dados necessários para exibir e copiar o QR Code (imagem base64 e código EMV), além de persistir a transação para acompanhamento de status via webhook e/ou consulta.
+
+Entradas (input do caso de uso)
+
+email (string, obrigatório, formato válido)
+
+plan_id (string, obrigatório)
+
+environment (string, opcional: "production" | "sandbox", default "production")
+
+metadata (objeto opcional; ex.: { source: "web", campaign: "ads-xx" } — apenas para log interno)
+
+Observação: O valor não vem do cliente. O valor é resolvido localmente pelo plan_id (em centavos).
+
+Catálogo de Planos (manter localmente)
+
+Defina localmente (arquivo/config) os planos e valores em centavos (mínimo 50):
+
+{
+  "plans": [
+    { "id": "basic_monthly",   "name": "Básico Mensal",   "amount": 1990 },
+    { "id": "pro_monthly",     "name": "Pro Mensal",      "amount": 4990 },
+    { "id": "lifetime",        "name": "Acesso Vitalício","amount": 14900 }
+  ]
+}
+
+
+Regras:
+
+Se plan_id não existir → retornar erro de validação amigável.
+
+Verificar limite mínimo (≥ 50) antes de chamar a API.
+
+Requisitos Funcionais
+
+Resolver valor do plano pelo plan_id em centavos.
+
+Criar cobrança PIX via PushinPay no endpoint POST /api/pix/cashIn.
+
+Headers obrigatórios:
+
+Authorization: Bearer <PUSHINPAY_TOKEN>
+
+Accept: application/json
+
+Content-Type: application/json
+
+Body mínimo:
+
+{
+  "value": <valor_em_centavos>,
+  "webhook_url": "<OPCIONAL: URL pública de webhook se disponível>",
+  "split_rules": []
+}
+
+
+Se não tiver servidor para webhook, não envie webhook_url.
+
+Persistir a transação criada no seu banco (ver “Persistência”).
+
+Retornar ao front-end:
+
+id, status (ex.: created), value, qr_code (EMV), qr_code_base64 (imagem), além de campos utilitários (ver “Contrato de Saída”).
+
+Atualização de status:
+
+Preferir webhook (a PushinPay reenvia até 3x em caso de falha).
+
+Se precisar consultar manualmente: usar GET /api/pix/cashIn/{ID} (máx. 1x/minuto por transação para evitar bloqueio).
+
+Exibir aviso legal (obrigatório) no checkout (ver “Aviso obrigatório”).
+
+Ambientes e URLs
+
+Produção (default): https://api.pushinpay.com.br
+
+Sandbox (homolog): https://api-sandbox.pushinpay.com.br
+
+Pré-requisitos PushinPay:
+
+Conta criada e aprovada.
+
+Para sandbox, cadastrar primeiro em produção e solicitar liberação de sandbox ao suporte.
+
+Persistência (modelo sugerido)
+
+Crie/atualize uma tabela pix_transactions:
+
+{
+  "id": "string (uuid retornado pela PushinPay)",
+  "email": "string",
+  "plan_id": "string",
+  "plan_name": "string",
+  "value": "integer (centavos)",
+  "status": "string (created|paid|expired)",
+  "qr_code": "string (EMV)",
+  "qr_code_base64": "string (data:image/png;base64,...)",
+  "webhook_url": "string|null",
+  "environment": "production|sandbox",
+  "end_to_end_id": "string|null",
+  "payer_name": "string|null",
+  "payer_national_registration": "string|null",
+  "created_at": "datetime",
+  "updated_at": "datetime",
+  "raw_response": "json"
+}
+
+Fluxo Principal (Create PIX)
+
+Validar entradas:
+
+email válido
+
+plan_id existente
+
+Resolver valor do plano (em centavos) e validar value >= 50.
+
+Montar URL base conforme environment.
+
+Montar headers com Bearer <PUSHINPAY_TOKEN> (via variável de ambiente).
+
+POST /{base}/api/pix/cashIn com value, opcional webhook_url, split_rules: [].
+
+Tratar resposta 200:
+
+Extrair: id, qr_code, qr_code_base64, status, value, webhook_url, end_to_end_id, payer_name, payer_national_registration.
+
+Persistir em pix_transactions.
+
+Retornar contrato de saída ao front-end.
+
+Tratar erros conforme HTTP status:
+
+400: Request inválido (exibir msg amigável; log detalhado).
+
+401: Token inválido (log crítico; instruir admin).
+
+403: Somente admin (não esperado; log).
+
+404: Recurso não encontrado.
+
+406: JSON inválido.
+
+429: Muitas requisições (aplicar backoff).
+
+500/503: Tente mais tarde (retry com backoff).
+
+418: (tratar como erro genérico e logar).
+
+Mensagens amigáveis para o usuário; detalhes técnicos somente em log.
+
+Webhook (Preferencial)
+
+Configure webhook_url se houver endpoint público seguro.
+
+PushinPay reenviará até 3x em caso de falha; permite retomar via painel.
+
+Permite header custom configurado no painel (se usado, validar assinatura/secreto).
+
+Ao receber webhook:
+
+Identificar transação por id (ou campo correlato da payload).
+
+Atualizar status, end_to_end_id, payer_*.
+
+Registrar histórico (auditoria).
+
+Disparar e-mail/WhatsApp internos (opcional).
+
+Não usar scraping para checar status; priorizar webhook.
+
+Consulta de Status (fallback/manual)
+
+Endpoint: GET /api/pix/cashIn/{ID}
+
+Limite: consultar no máximo a cada 1 minuto por transação.
+
+Retorno idêntico ao “Criar PIX”.
+
+Atualizar persistência ao mudar status.
+
+Aviso obrigatório (exibir no checkout)
+
+Texto recomendado (copiar/colar no seu checkout e termos):
+
+“A PUSHIN PAY atua exclusivamente como processadora de pagamentos e não possui qualquer responsabilidade pela entrega, suporte, conteúdo, qualidade ou cumprimento das obrigações relacionadas aos produtos ou serviços oferecidos pelo vendedor.”
+
+Obrigatório: exibir no momento da oferta e antes da finalização do pagamento (preferencialmente na página de checkout, termos e/ou comunicações automáticas).
+
+Segurança & Config
+
+NUNCA expor o PUSHINPAY_TOKEN no front-end.
+
+Armazenar PUSHINPAY_TOKEN em variável de ambiente segura.
+
+Validar email (regex básica + normalização).
+
+Sanitizar logs e payloads (evitar dados sensíveis).
+
+split_rules: manter vazio a menos que você implemente split. Se usar, garantir que somatório (splits + taxa) não excede value.
+
+Contrato de Saída (response para o front-end)
+{
+  "success": true,
+  "transaction": {
+    "id": "string",
+    "status": "created|paid|expired",
+    "plan_id": "string",
+    "plan_name": "string",
+    "value": 14900,
+    "qr_code": "string (EMV para copiar e colar)",
+    "qr_code_base64": "data:image/png;base64,...",
+    "copy_paste_code": "string (alias para qr_code)",
+    "environment": "production|sandbox"
+  },
+  "ui": {
+    "disclaimer": "A PUSHIN PAY atua exclusivamente como processadora de pagamentos...",
+    "instructions": "Escaneie o QR Code no app do seu banco ou copie o código PIX."
+  }
+}
+
+
+Em caso de erro:
+
+{
+  "success": false,
+  "error_code": "VALIDATION_ERROR|UNAUTHORIZED|RATE_LIMIT|SERVER_ERROR|UNKNOWN",
+  "message": "Mensagem amigável para o usuário",
+  "details": "Opcional: detalhes técnicos somente para log/admin"
+}
+
+Casos de Teste (aceitação)
+
+Criar PIX sucesso (produção)
+Input: email válido + plan_id existente (value >= 50)
+Resultado: 200; retorna id, qr_code_base64, status=created; persiste registro.
+
+Plano inválido
+Input: plan_id inexistente
+Resultado: success=false, error_code=VALIDATION_ERROR.
+
+Valor mínimo violado
+Plano com amount < 50
+Resultado: bloquear antes da chamada; mensagem amigável.
+
+Token inválido
+401 da API
+Resultado: success=false, error_code=UNAUTHORIZED; log crítico.
+
+Rate limit
+Simular chamadas rápidas → tratar 429 com backoff exponencial.
+
+Webhook atualização para paid
+Simular POST webhook → atualizar status, salvar end_to_end_id.
+
+Consulta de status
+GET /api/pix/cashIn/{ID} respeitando ≥ 60s entre chamadas.
+Atualizar status quando retornar diferente.
+
+Sandbox
+environment="sandbox" → usar URL sandbox e token correspondente.
+
+Pseudo-código (referência)
+function createPixByEmail(email, plan_id, environment="production"):
+  assert isValidEmail(email)
+  plan = Plans.find(plan_id)
+  assert plan and plan.amount >= 50
+
+  baseUrl = environment == "sandbox" ? SANDBOX_URL : PROD_URL
+  token  = environment == "sandbox" ? ENV.PUSHINPAY_TOKEN_SANDBOX : ENV.PUSHINPAY_TOKEN
+
+  body = {
+    "value": plan.amount,
+    ...(WEBHOOK_URL ? {"webhook_url": WEBHOOK_URL} : {}),
+    "split_rules": []
+  }
+
+  res = POST baseUrl + "/api/pix/cashIn" with headers:
+        Authorization: "Bearer " + token
+        Accept: "application/json"
+        Content-Type: "application/json"
+        and body
+
+  if res.status == 200:
+    persist pix_transactions with response + email + plan_id/name + environment
+    return success payload to FE
+  else:
+    map status -> error_code, return friendly message, log details
+
+Exemplo de cURL (produção)
+curl --location 'https://api.pushinpay.com.br/api/pix/cashIn' \
+  --header 'Authorization: Bearer <PUSHINPAY_TOKEN>' \
+  --header 'Accept: application/json' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "value": 14900,
+    "webhook_url": "https://seu-dominio.com/api/pushinpay/webhook",
+    "split_rules": []
+  }'
+
+Observações importantes da PushinPay (implementar como checks/documentação)
+
+Valores sempre em CENTAVOS; mínimo R$ 0,50.
+
+Respeitar limites da conta (valor máximo).
+
+Consulta: no máximo 1/min por transação.
+
+Webhook: reenvio automático até 3x; possibilidade de retomar no painel.
+
+Evitar scraping para status; use webhook/consulta oficial.
+
+Entregáveis do Agente
+
+Função createPixByEmail(email, plan_id, environment?)
+
+(Opcional) Função getPixStatus(id, environment?) com rate-limit interno (≥60s)
+
+Endpoint de webhook POST /api/pushinpay/webhook (idempotente)
+
+Migração/Model de pix_transactions
+
+Variáveis de ambiente (PUSHINPAY_TOKEN, PUSHINPAY_TOKEN_SANDBOX, WEBHOOK_URL)
+
+Documentação rápida para o front-end com contrato de saída e aviso obrigatório.

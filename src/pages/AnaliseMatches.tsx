@@ -150,20 +150,27 @@ export const AnaliseMatches = () => {
   // Carregar foto do usuário do cache de sessão
   useEffect(() => {
     const loadUserPhoto = () => {
-      // Tentar carregar do sessionStorage primeiro
-      const cachedPhoto = sessionStorage.getItem('userPhoto');
+      // Tentar carregar do sessionStorage primeiro (chave correta)
+      const cachedPhoto = sessionStorage.getItem('userPhotoCache');
       if (cachedPhoto) {
         console.log('Foto carregada do sessionStorage:', cachedPhoto);
         setUserPhoto(cachedPhoto);
         return;
       }
       
-      // Fallback para localStorage
-      const localPhoto = localStorage.getItem('userPhoto');
-      if (localPhoto) {
-        console.log('Foto carregada do localStorage:', localPhoto);
-        setUserPhoto(localPhoto);
-        return;
+      // Fallback para localStorage (perfil do usuário)
+      const userProfile = localStorage.getItem('userProfile');
+      if (userProfile) {
+        try {
+          const profile = JSON.parse(userProfile);
+          if (profile.photoUrl) {
+            console.log('Foto carregada do localStorage:', profile.photoUrl);
+            setUserPhoto(profile.photoUrl);
+            return;
+          }
+        } catch (error) {
+          console.error('Erro ao parsear perfil do localStorage:', error);
+        }
       }
       
       console.log('Nenhuma foto encontrada no cache');
