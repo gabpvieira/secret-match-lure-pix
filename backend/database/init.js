@@ -1,12 +1,24 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
+const fs = require('fs');
 
-const DB_PATH = path.join(__dirname, 'pix_transactions.db');
+const DB_PATH = process.env.DB_FILE_PATH || path.join(__dirname, 'pix_transactions.db');
 
 let db;
 
 function initDatabase() {
   return new Promise((resolve, reject) => {
+    // Garantir que o diretório existe
+    const dbDir = path.dirname(DB_PATH);
+    if (!fs.existsSync(dbDir)) {
+      try {
+        fs.mkdirSync(dbDir, { recursive: true });
+        console.log(`✅ Diretório criado: ${dbDir}`);
+      } catch (mkdirErr) {
+        console.warn(`⚠️ Não foi possível criar diretório: ${mkdirErr.message}`);
+      }
+    }
+    
     db = new sqlite3.Database(DB_PATH, (err) => {
       if (err) {
         console.error('❌ Erro ao conectar com o banco:', err.message);

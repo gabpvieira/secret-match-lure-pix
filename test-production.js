@@ -135,8 +135,4 @@ async function testPixCreation() {
 }
 
 // Executar testes
-if (require.main === module) {
-  runTests().catch(console.error);
-}
-
-module.exports = { runTests, testEndpoint, testPixCreation };
+runTests().catch(console.error);
