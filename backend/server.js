@@ -71,6 +71,11 @@ app.use('/api/pix', require('./routes/pix'));
 // Rotas Webhook
 app.use('/api/pushinpay', require('./routes/webhook'));
 
+// Rotas de debug (apenas para desenvolvimento)
+if (process.env.NODE_ENV !== 'production') {
+  app.use('/api/debug', require('./routes/debug'));
+}
+
 // Middleware de tratamento de erros
 app.use((err, req, res, next) => {
   console.error('❌ Erro não tratado:', {

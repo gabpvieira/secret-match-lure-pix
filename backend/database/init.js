@@ -2,7 +2,14 @@ const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const fs = require('fs');
 
+console.log('🔍 Inicializando banco de dados...');
+console.log('📁 DB_FILE_PATH:', process.env.DB_FILE_PATH);
+console.log('📁 DATA_DIR:', process.env.DATA_DIR);
+console.log('📁 NODE_ENV:', process.env.NODE_ENV);
+
 const DB_PATH = process.env.DB_FILE_PATH || path.join(__dirname, 'pix_transactions.db');
+
+console.log('📁 Caminho final do banco:', DB_PATH);
 
 let db;
 
@@ -10,6 +17,8 @@ function initDatabase() {
   return new Promise((resolve, reject) => {
     // Garantir que o diretório existe
     const dbDir = path.dirname(DB_PATH);
+    console.log('📁 Verificando diretório:', dbDir);
+    
     if (!fs.existsSync(dbDir)) {
       try {
         fs.mkdirSync(dbDir, { recursive: true });
@@ -17,7 +26,19 @@ function initDatabase() {
       } catch (mkdirErr) {
         console.warn(`⚠️ Não foi possível criar diretório: ${mkdirErr.message}`);
       }
+    } else {
+      console.log(`✅ Diretório já existe: ${dbDir}`);
     }
+    
+    // Verificar permissões do diretório
+    try {
+      fs.accessSync(dbDir, fs.constants.W_OK);
+      console.log(`✅ Diretório tem permissão de escrita: ${dbDir}`);
+    } catch (err) {
+      console.error(`❌ Diretório sem permissão de escrita: ${dbDir}`, err.message);
+    }
+    
+    console.log('📊 Iniciando conexão com SQLite...');
     
     db = new sqlite3.Database(DB_PATH, (err) => {
       if (err) {
