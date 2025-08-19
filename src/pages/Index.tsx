@@ -8,11 +8,10 @@ import { Checkout } from "@/components/Checkout";
 import { PostPurchase } from "@/components/PostPurchase";
 import { useGeolocation, getFakeCityForProfile, getUserLocationData } from "@/hooks/useGeolocation";
 import { SwipeProfileCard } from "@/components/SwipeProfileCard";
-import ProfileOnboarding from "@/components/ProfileOnboarding";
 import { MatchResult } from "@/components/MatchResult";
 import PlanCheckout from "@/components/PlanCheckout";
 
-type Step = 'ambiente-seguro' | 'onboarding' | 'landing' | 'profiles' | 'loading' | 'matches' | 'checkout' | 'success' | 'plan-details';
+type Step = 'ambiente-seguro' | 'match-secreto' | 'curtir' | 'analise-matches' | 'checkout' | 'checkout-plan' | 'plano-details';
 
 const Index = () => {
   const [currentStep, setCurrentStep] = useState<Step>('ambiente-seguro');
@@ -23,6 +22,7 @@ const Index = () => {
   const [userProfileData, setUserProfileData] = useState<any>(null);
   const [profiles, setProfiles] = useState<any[]>([]);
   const [loadingProfiles, setLoadingProfiles] = useState(true);
+  const [likedProfiles, setLikedProfiles] = useState<Set<string>>(new Set());
   const { city, loading: locationLoading } = useGeolocation();
 
   const baseProfiles = [
@@ -124,25 +124,28 @@ const Index = () => {
     initializeProfiles();
   }, []);
 
-  const handleLikeProfile = (profileId: number) => {
-    const newLiked = new Set(likedProfiles);
-    if (newLiked.has(profileId)) {
-      newLiked.delete(profileId);
-    } else {
-      newLiked.add(profileId);
-    }
-    setLikedProfiles(newLiked);
-
-    // Se curtiu todos os perfis, iniciar análise
-    if (newLiked.size === profiles.length) {
-      setCurrentStep('loading');
-    }
+  const handleLikeProfile = (profileId: string) => {
+    setLikedProfiles(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(profileId)) {
+        newSet.delete(profileId);
+      } else {
+        newSet.add(profileId);
+      }
+      return newSet;
+    });
   };
 
-  const handleOnboardingComplete = (profileData: any) => {
-    setUserProfileData(profileData);
-    // Ir para a tela de loading após o onboarding
-    setCurrentStep('loading');
+  const handleMatchSecretoComplete = () => {
+    setCurrentStep('curtir');
+  };
+
+  const handleCurtirComplete = () => {
+    setCurrentStep('analise-matches');
+  };
+
+  const handleAnaliseComplete = () => {
+    setCurrentStep('checkout');
   };
 
   const handleViewProfiles = () => {
@@ -177,8 +180,10 @@ const Index = () => {
   };
 
   const handleContinueFromAmbiente = () => {
-    setCurrentStep('onboarding');
+    setCurrentStep('match-secreto');
   };
+
+
 
   if (currentStep === 'ambiente-seguro') {
     return (
@@ -210,8 +215,110 @@ const Index = () => {
     );
   }
 
-  if (currentStep === 'onboarding') {
-    return <ProfileOnboarding onComplete={handleOnboardingComplete} />;
+  if (currentStep === 'match-secreto') {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center px-4">
+        <Card className="modern-card w-full max-w-lg">
+          <CardContent className="p-8 text-center">
+            <div className="mb-6">
+              <Eye className="w-16 h-16 mx-auto text-purple-400 mb-4" />
+            </div>
+            
+            <h1 className="text-2xl sm:text-3xl font-bold text-heading mb-6 leading-tight">
+              Match Secreto 🔮
+            </h1>
+            
+            <p className="text-lg text-body text-muted-foreground mb-8">
+              Prepare-se para descobrir conexões únicas e exclusivas. Seu próximo match está a um clique de distância.
+            </p>
+            
+            <Button 
+              onClick={handleMatchSecretoComplete}
+              className="w-full professional-button text-lg py-6 bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600"
+              size="lg"
+            >
+              Descobrir Matches Secretos
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (currentStep === 'curtir') {
+    return (
+      <div className="min-h-screen bg-black flex flex-col">
+        <div className="flex-1 flex flex-col items-center justify-center p-4">
+          <div className="w-full max-w-md">
+            <h1 className="text-2xl font-bold text-center text-heading mb-6">
+              Quem você quer conhecer? 💕
+            </h1>
+            
+            <div className="space-y-4">
+              {profiles.slice(0, 3).map((profile) => (
+                <div key={profile.id} className="modern-card p-4 flex items-center space-x-4">
+                  <img 
+                    src={profile.image} 
+                    alt={profile.name}
+                    className="w-16 h-16 rounded-full object-cover"
+                  />
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-heading">{profile.name}, {profile.age}</h3>
+                    <p className="text-sm text-muted-foreground">{profile.location}</p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleLikeProfile(profile.id)}
+                    className={likedProfiles.has(profile.id) ? "text-red-500" : "text-gray-400"}
+                  >
+                    <Heart className="w-5 h-5" fill={likedProfiles.has(profile.id) ? "currentColor" : "none"} />
+                  </Button>
+                </div>
+              ))}
+            </div>
+            
+            <Button 
+              onClick={handleCurtirComplete}
+              className="w-full mt-8 professional-button bg-gradient-to-r from-pink-600 to-pink-500 hover:from-pink-700 hover:to-pink-600"
+              size="lg"
+            >
+              Continuar para Análise
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (currentStep === 'analise-matches') {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center px-4">
+        <Card className="modern-card w-full max-w-lg">
+          <CardContent className="p-8 text-center">
+            <div className="mb-6">
+              <Sparkles className="w-16 h-16 mx-auto text-yellow-400 mb-4" />
+            </div>
+            
+            <h1 className="text-2xl sm:text-3xl font-bold text-heading mb-6 leading-tight">
+              Analisando seus Matches ✨
+            </h1>
+            
+            <p className="text-lg text-body text-muted-foreground mb-8">
+              Encontramos {likedProfiles.size} perfis compatíveis com você! Prepare-se para desbloquear conexões exclusivas.
+            </p>
+            
+            <Button 
+              onClick={handleAnaliseComplete}
+              className="w-full professional-button text-lg py-6 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-700 hover:to-yellow-600"
+              size="lg"
+            >
+              Ver Resultados
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   if (currentStep === 'loading') {
