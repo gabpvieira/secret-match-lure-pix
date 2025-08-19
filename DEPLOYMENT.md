@@ -50,9 +50,19 @@ PORT=3001
    ```
 
 4. **Configurar variáveis de ambiente no Vercel Dashboard**:
-   - VITE_API_URL: https://secret-match-lure.vercel.app
-   - PUSHINPAY_API_KEY: sua chave de produção
-   - PUSHINPAY_CLIENT_ID: seu client ID de produção
+   Acesse: Settings > Environment Variables no dashboard do Vercel
+   
+   **Frontend**:
+   - VITE_API_URL: `https://secret-match-lure.vercel.app`
+   
+   **Backend**:
+   - NODE_ENV: `production`
+   - PUSHINPAY_ENVIRONMENT: `production`
+   - PUSHINPAY_API_KEY: `sua_chave_pushinpay_producao`
+   - PUSHINPAY_CLIENT_ID: `seu_client_id_pushinpay`
+   - WEBHOOK_BASE_URL: `https://secret-match-lure.vercel.app`
+   - CORS_ORIGIN: `https://secret-match-lure.vercel.app`
+   - PORT: `3001`
 
 ### Testes Locais
 

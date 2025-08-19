@@ -28,9 +28,6 @@
   ],
   "env": {
     "NODE_ENV": "production",
-    "VITE_API_URL": "@vite_api_url",
-    "PUSHINPAY_API_KEY": "@pushinpay_api_key",
-    "PUSHINPAY_CLIENT_ID": "@pushinpay_client_id",
     "PUSHINPAY_ENVIRONMENT": "production"
   }
 }
