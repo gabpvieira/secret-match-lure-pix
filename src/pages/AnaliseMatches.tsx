@@ -137,7 +137,7 @@ interface Match {
   location: string;
 }
 
-export const AnaliseMatches = () => {
+const AnaliseMatches = () => {
   const navigate = useNavigate();
   const [isAnalyzing, setIsAnalyzing] = useState(true);
   const [matches, setMatches] = useState<Match[]>([]);

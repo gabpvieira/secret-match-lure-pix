@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { CheckCircle, ArrowLeft, CreditCard, QrCode, Copy, Check } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { CheckCircle, ArrowLeft, CreditCard, QrCode, Copy, Check } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface PlanConfig {
   id: string;
@@ -17,13 +18,16 @@ interface PlanConfig {
 }
 
 interface PlanCheckoutProps {
-  planId: string;
-  onBack?: () => void;
+  planId?: string;
 }
 
-const PlanCheckout: React.FC<PlanCheckoutProps> = ({ planId, onBack }) => {
+const PlanCheckout = ({ planId: propPlanId }: PlanCheckoutProps) => {
+  const { planId: urlPlanId } = useParams();
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [email, setEmail] = useState('');
+
+  const actualPlanId = propPlanId || urlPlanId;
   const [isLoading, setIsLoading] = useState(false);
   const [pixData, setPixData] = useState<any>(null);
   const [copied, setCopied] = useState(false);
@@ -83,12 +87,10 @@ const PlanCheckout: React.FC<PlanCheckoutProps> = ({ planId, onBack }) => {
     return imageMap[planId] || '';
   };
 
-  const currentPlan = planId ? planConfig[planId] : null;
+  const currentPlan = actualPlanId ? planConfig[actualPlanId] : null;
 
   const handleGoBack = () => {
-    if (onBack) {
-      onBack();
-    }
+    navigate('/checkout');
   };
 
   const handleCopyPixCode = async () => {
@@ -300,44 +302,48 @@ const PlanCheckout: React.FC<PlanCheckoutProps> = ({ planId, onBack }) => {
 
                 {/* PIX Code */}
                 {pixData.pix?.qr_code && (
-                  <div className="space-y-2">
+                  <div className="space-y-4">
                     <Label className="text-white font-medium">
                       Código PIX (Copiar e Colar)
                     </Label>
-                    <div className="bg-white/10 p-3 rounded border border-white/20 relative">
-                      <code className="text-white text-xs break-all pr-12">
+                    <div className="bg-white/10 p-4 rounded-lg border border-white/20">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-white text-xs font-mono">Código PIX:</span>
+                        <span className={`text-xs px-2 py-1 rounded ${copied ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-300'}`}>
+                          {copied ? 'Copiado!' : 'Clique para copiar'}
+                        </span>
+                      </div>
+                      <code className="text-white text-xs break-all block bg-black/30 p-3 rounded border border-white/10">
                         {pixData.pix.qr_code}
                       </code>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
                       <Button
                         onClick={handleCopyPixCode}
-                        size="sm"
-                        variant="ghost"
-                        className="absolute top-2 right-2 h-8 w-8 p-0 text-white hover:bg-white/20"
+                        variant={copied ? "default" : "outline"}
+                        className={`${copied ? 'bg-green-600 hover:bg-green-700 text-white' : 'border-white/30 text-white hover:bg-white/10'}`}
                       >
                         {copied ? (
-                          <Check className="w-4 h-4 text-green-400" />
+                          <>
+                            <Check className="w-4 h-4 mr-2" />
+                            Copiado!
+                          </>
                         ) : (
-                          <Copy className="w-4 h-4" />
+                          <>
+                            <Copy className="w-4 h-4 mr-2" />
+                            Copiar Código
+                          </>
                         )}
                       </Button>
+                      <Button
+                        onClick={handleCopyPixCode}
+                        variant="ghost"
+                        className="bg-white/5 border border-white/10 text-white hover:bg-white/10"
+                      >
+                        <Copy className="w-4 h-4 mr-2" />
+                        Copiar PIX
+                      </Button>
                     </div>
-                    <Button
-                      onClick={handleCopyPixCode}
-                      variant="outline"
-                      className="w-full border-white/30 text-white hover:bg-white/10"
-                    >
-                      {copied ? (
-                        <>
-                          <Check className="w-4 h-4 mr-2 text-green-400" />
-                          Copiado!
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-4 h-4 mr-2" />
-                          Copiar Código PIX
-                        </>
-                      )}
-                    </Button>
                   </div>
                 )}
 

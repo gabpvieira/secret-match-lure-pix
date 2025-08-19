@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Shield } from "lucide-react";
 
-export const AmbienteSeguro = () => {
+const AmbienteSeguro = () => {
   const navigate = useNavigate();
 
   const handleContinue = () => {
@@ -38,3 +38,5 @@ export const AmbienteSeguro = () => {
     </div>
   );
 };
+
+export default AmbienteSeguro;

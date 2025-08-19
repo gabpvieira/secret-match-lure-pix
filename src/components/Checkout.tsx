@@ -6,8 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Clock, Gift, Shield, Star, Flame, MessageCircle, Brain, Bolt, Eye, Lock, Zap } from "lucide-react";
 
 interface CheckoutProps {
-  onPurchase: (plan: string) => void;
-  onSelectPlan?: (planId: string) => void;
+  onPurchase?: (plan: string) => void;
 }
 
 interface Notification {
@@ -17,9 +16,10 @@ interface Notification {
   timestamp: number;
 }
 
-export const Checkout = ({ onPurchase, onSelectPlan }: CheckoutProps) => {
+const Checkout = ({ onPurchase }: CheckoutProps) => {
   const [timeLeft, setTimeLeft] = useState(8 * 60); // 8:00 minutes in seconds
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const navigate = useNavigate();
   
   const maleNames = [
     "Carlos", "Rafael", "Bruno", "Diego", "Lucas", "Felipe", "André", "Thiago",
@@ -106,9 +106,7 @@ export const Checkout = ({ onPurchase, onSelectPlan }: CheckoutProps) => {
   };
 
   const handlePurchase = (planId: string) => {
-    if (onSelectPlan) {
-      onSelectPlan(planId);
-    }
+    navigate(`/checkout/${planId}`);
   };
 
 
@@ -378,3 +376,5 @@ export const Checkout = ({ onPurchase, onSelectPlan }: CheckoutProps) => {
     </div>
   );
 };
+
+export default Checkout;

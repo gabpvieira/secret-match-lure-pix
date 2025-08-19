@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import ProfileOnboarding from "@/components/ProfileOnboarding";
 import { Eye, Users, Heart } from "lucide-react";
 
-export const MatchSecreto = () => {
+const MatchSecreto = () => {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const navigate = useNavigate();
 
@@ -92,3 +92,5 @@ export const MatchSecreto = () => {
     </div>
   );
 };
+
+export default MatchSecreto;

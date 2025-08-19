@@ -96,7 +96,7 @@ const generateProfilesWithFakeCities = (userState: string): Profile[] => {
   }));
 };
 
-export const CurtirPerfis = () => {
+const CurtirPerfis = () => {
   const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
